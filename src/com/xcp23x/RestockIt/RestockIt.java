@@ -11,6 +11,10 @@ public class RestockIt extends JavaPlugin {
     static final Logger log = Logger.getLogger("Minecraft");
     public static RestockIt plugin;
     public boolean dispenserEnabled = false;
+    
+//    not implemented yet:
+//    public static List <String> blacklist;
+    
     //Listeners:
     private final RIplayer playerListener = new RIplayer(this);
     private final RIblock blockListener = new RIblock(this);
@@ -29,7 +33,12 @@ public class RestockIt extends JavaPlugin {
     PluginManager pm = this.getServer().getPluginManager();
     pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
     pm.registerEvent(Event.Type.SIGN_CHANGE, blockListener, Event.Priority.Normal, this);
+ 
+//    NOT IMPLEMENTED YET:
+//    blacklist = this.getConfig().getList("blacklist");
+    
   }
+
         
     public boolean isInteger(String input) {
         try {

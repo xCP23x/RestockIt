@@ -26,10 +26,11 @@ public class RIplayer extends PlayerListener {
         Chest chest = (Chest)block.getState();
         Inventory inv = chest.getInventory();
         Block targetBlock = block.getWorld().getBlockAt(block.getLocation().getBlockX(), block.getLocation().getBlockY() + 1, block.getLocation().getBlockZ());
-        
-//        if ((targetBlock.getType() != Material.WALL_SIGN) && (targetBlock.getType() != Material.SIGN_POST)) {
-//          targetBlock = block.getWorld().getBlockAt(block.getLocation().getBlockX(), block.getLocation().getBlockY() - 1, block.getLocation().getBlockZ());
-//        }
+   
+ // Signs below chests not implemented        
+ //       if ((targetBlock.getType() != Material.WALL_SIGN) && (targetBlock.getType() != Material.SIGN_POST)) {
+ //       targetBlock = block.getWorld().getBlockAt(block.getLocation().getBlockX(), block.getLocation().getBlockY() - 1, block.getLocation().getBlockZ());
+ //       }
         
         if ((targetBlock.getType() == Material.WALL_SIGN) || (targetBlock.getType() == Material.SIGN_POST)) {
           String[] sign_text = ((Sign)targetBlock.getState()).getLines();
