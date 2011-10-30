@@ -1,7 +1,0 @@
-1.1:
-Added version number to startup text
-A sign is now dropped when it is removed due to bad syntax or insufficient permissions
-
-1.2:
-Re-wrote and tidied up TIblock.java
-Fixed issues with PEX notifications
