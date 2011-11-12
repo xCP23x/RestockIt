@@ -93,12 +93,16 @@ public class RIbl extends BlockListener {
     
     public static int checkID(String line) {
         if(line.contains(":")) {
-            line = line.split(":")[0];
             try{
                 String split = line.split(":")[1];
                 Short damage = Short.parseShort(split);
+                int item = Integer.parseInt(line.split(":")[0]);
+                if ((item != 0) && (Material.getMaterial(item) != null)) return 1; //It's an int ID
+                return -1; //It's an int, but not an ID
             } catch(ArrayIndexOutOfBoundsException ex) {
-               return -2; 
+                return -2;  //Problem with damage value
+            } catch(NumberFormatException ex) {
+                return 0; //Not an int, could be a name but we only want numbers.
             }
         }
         try {
