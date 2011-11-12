@@ -1,0 +1,4 @@
+name: RestockIt
+main: org.xcp23x.RestockIt.RestockIt
+version: 1.3
+commands:

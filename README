@@ -1,2 +1,3 @@
-This is a placeholder for the RestockIt project, which is currently closed source and therefore not currently on Github.
-Hopefully it should be open sourced when I have the time to re-write it from scratch
+The bukkit project page for RestockIt is available at http://dev.bukkit.org/server-mods/restockit/
+The source code for RestockIt can be found in the src folder.
+RestockIt uses the GNU GPL v2 license. Please make sure you are familiar with it before using this source code.
