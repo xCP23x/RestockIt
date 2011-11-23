@@ -86,26 +86,29 @@ public class RIbl extends BlockListener {
             dropSign(loc, world);
         } else if (ID == -2){
             player.sendMessage("[RestockIt] There was a problem with the damage value");
-            player.sendMessage("[RestockIt] Make sure you used an ID number with the damage value");
+            player.sendMessage("[RestockIt] Please check that it is under 266, and that you typed it correctly");
             dropSign(loc, world);
         }
     }
     
     public static int checkID(String line) {
         if(line.contains(":")) {
+            String damageStr = line.split(":")[1];
+            String itemStr = line.split(":")[0];
             try{
-                String split = line.split(":")[1];
-                Short damage = Short.parseShort(split);
-                int item = Integer.parseInt(line.split(":")[0]);
+                Short damage = Short.parseShort(damageStr); //if it's not a short, it's not a damage value
+                if (damage > 255) return -2; //Damage value can't be more than 255
+                int item = Integer.parseInt(itemStr);
                 if ((item != 0) && (Material.getMaterial(item) != null)) return 1; //It's an int ID
                 return -1; //It's an int, but not an ID
             } catch(ArrayIndexOutOfBoundsException ex) {
                 return -2;  //Problem with damage value
             } catch(NumberFormatException ex) {
-                return 0; //Not an int, could be a name but we only want numbers.
+                if ((!"AIR".equals(itemStr)) && (itemStr != null) && (Material.getMaterial(itemStr) != null)) return 2;
+                return 0; //Not an int or an id.
             }
         }
-        try {
+        else try {
             int item = Integer.parseInt(line);
             if ((item != 0) && (Material.getMaterial(item) != null)) return 1; //It's an int ID
             return -1; //It's an int, but not an ID
