@@ -1,3 +1,5 @@
+//@author Chris Price (xCP23x)
+
 package org.xcp23x.RestockIt;
 
 import org.bukkit.Bukkit;
@@ -6,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +32,15 @@ public class RIbl extends BlockListener {
         String line1 = event.getLine(1);
         String line2 = event.getLine(2);
         
-        if(checkCommand(line1)) if(checkPermissions(player, blockBelow, loc)) if(checkBlockBelow(player, blockBelow, loc)) checkItem(line2, loc, player);
+        if(checkCommand(line1)) if(checkPermissions(player, blockBelow, loc, line2)) if(checkBlockBelow(player, blockBelow, loc)) checkItem(line2, loc, player);
+    }
+    
+    @Override
+    public void onBlockDispense(BlockDispenseEvent event) {
+        Block block = event.getBlock();
+        if(block.getType() == Material.DISPENSER) {
+            RIpl.checkSign(block);
+        }
     }
     
     public static boolean checkCommand(String line1) {
@@ -38,19 +49,23 @@ public class RIbl extends BlockListener {
         return false;
     }
     
-    public boolean checkPermissions(Player player, Block block, Location loc) {
+    public boolean checkPermissions(Player player, Block block, Location loc, String line) {
         Material material = block.getType();
         if(Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx")){
             PermissionManager perms = PermissionsEx.getPermissionManager();
-            if ((!perms.has(player, "restockit.chest")) && (material == Material.CHEST)) {
+            if (!perms.has(player, "restockit.incinerator") && (line.equalsIgnoreCase("Incinerator"))) {
+                dropSign(loc, player.getWorld());
+                player.sendMessage("[RestockIt] You do not have permission to make a RestockIt incinerator.");
+            }
+            if (!perms.has(player, "restockit.chest") && (material == Material.CHEST)) {
                 dropSign(loc, player.getWorld());
                 player.sendMessage("[RestockIt] You do not have permission to make a RestockIt chest.");
                 return false;
-            } else if ((!perms.has(player, "restockit.dispenser")) && (material == Material.DISPENSER)) {
+            } else if (!perms.has(player, "restockit.dispenser") && (material == Material.DISPENSER)) {
                 dropSign(loc, player.getWorld());
                 player.sendMessage("[RestockIt] You do not have permission to make a RestockIt dispenser.");
                 return false;
-            } else if ((!perms.has(player, "restockit.chest")) && ((!perms.has(player, "restockit.dispenser")))) {
+            } else if (!perms.has(player, "restockit.chest") && ((!perms.has(player, "restockit.dispenser")))) {
                 dropSign(loc, player.getWorld());
                 player.sendMessage("[RestockIt] You do not have permission use RestockIt");
                 return false;
@@ -73,7 +88,7 @@ public class RIbl extends BlockListener {
         return false;
     }
     
-    public void checkItem(String line2, Location loc,Player player) {
+    public void checkItem(String line2, Location loc, Player player) {
         World world = player.getWorld();
         int ID = checkID(line2);
         if (ID == 0) {
@@ -86,18 +101,22 @@ public class RIbl extends BlockListener {
             dropSign(loc, world);
         } else if (ID == -2){
             player.sendMessage("[RestockIt] There was a problem with the damage value");
-            player.sendMessage("[RestockIt] Please check that it is under 266, and that you typed it correctly");
+            player.sendMessage("[RestockIt] Please make sure you typed it correctly");
             dropSign(loc, world);
+        } else if (ID == 3){
+            player.sendMessage("[RestockIt] Incinerator created");
+            player.sendMessage("[RestockIt] Use shift to move entire stacks");
+            player.sendMessage("[RestockIt] Re-open the chest to incinerate items");
         }
     }
     
     public static int checkID(String line) {
+        if(line.equalsIgnoreCase("Incinerator")) return 3;
         if(line.contains(":")) {
             String damageStr = line.split(":")[1];
             String itemStr = line.split(":")[0];
             try{
                 Short damage = Short.parseShort(damageStr); //if it's not a short, it's not a damage value
-                if (damage > 255) return -2; //Damage value can't be more than 255
                 int item = Integer.parseInt(itemStr);
                 if ((item != 0) && (Material.getMaterial(item) != null)) return 1; //It's an int ID
                 return -1; //It's an int, but not an ID
@@ -122,5 +141,4 @@ public class RIbl extends BlockListener {
         world.getBlockAt(loc).setType(Material.AIR);
         world.dropItem(loc, new ItemStack(Material.SIGN,1));
     }
-    
 }

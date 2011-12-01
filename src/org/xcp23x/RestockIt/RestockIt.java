@@ -1,3 +1,5 @@
+//@author Chris Price (xCP23x)
+
 package org.xcp23x.RestockIt;
 
 import java.util.logging.Logger;
@@ -19,8 +21,9 @@ public class RestockIt extends JavaPlugin {
         PluginDescriptionFile pdfFile = this.getDescription();
         RestockIt.log.info("[RestockIt] v" + pdfFile.getVersion() + " Started");
         PluginManager pm = this.getServer().getPluginManager();
-        pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Low, this);
-        pm.registerEvent(Event.Type.SIGN_CHANGE, blockListener, Event.Priority.Low, this);
+        pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
+        pm.registerEvent(Event.Type.SIGN_CHANGE, blockListener, Event.Priority.Normal, this);
+        pm.registerEvent(Event.Type.BLOCK_DISPENSE, blockListener, Event.Priority.Normal, this);
     }
         @Override
     public void onDisable() {
