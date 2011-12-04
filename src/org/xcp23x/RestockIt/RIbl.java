@@ -53,11 +53,13 @@ public class RIbl extends BlockListener {
         Material material = block.getType();
         if(Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx")){
             PermissionManager perms = PermissionsEx.getPermissionManager();
-            if (!perms.has(player, "restockit.incinerator") && (line.equalsIgnoreCase("Incinerator"))) {
-                dropSign(loc, player.getWorld());
-                player.sendMessage("[RestockIt] You do not have permission to make a RestockIt incinerator.");
-            }
-            if (!perms.has(player, "restockit.chest") && (material == Material.CHEST)) {
+            if (line.equalsIgnoreCase("Incinerator")) {
+                if(!perms.has(player, "restockit.incinerator")){
+                    dropSign(loc, player.getWorld());
+                    player.sendMessage("[RestockIt] You do not have permission to make a RestockIt incinerator.");
+                    return false;
+                } else return true;
+            } else if (!perms.has(player, "restockit.chest") && (material == Material.CHEST)) {
                 dropSign(loc, player.getWorld());
                 player.sendMessage("[RestockIt] You do not have permission to make a RestockIt chest.");
                 return false;
@@ -71,6 +73,7 @@ public class RIbl extends BlockListener {
                 return false;
             }
         } else if (!player.isOp()) {
+            if(line.equalsIgnoreCase("Incinerator")) return true;
             dropSign(loc, player.getWorld());
             if(material == Material.CHEST) player.sendMessage("[RestockIt] You must be an op to make a RestockIt chest");
             if(material == Material.DISPENSER) player.sendMessage("[RestockIt] You must be an op to make a RestockIt dispenser");
