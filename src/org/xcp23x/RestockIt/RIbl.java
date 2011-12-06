@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockListener;
@@ -25,14 +26,21 @@ public class RIbl extends BlockListener {
     public void onSignChange(SignChangeEvent event) {
         Location loc = event.getBlock().getLocation();
         Player player = event.getPlayer();
-        int x = loc.getBlockX();
-        int y = loc.getBlockY() - 1;
-        int z = loc.getBlockZ();
-        Block blockBelow = player.getWorld().getBlockAt(x,y,z);
+        int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+        
         String line1 = event.getLine(1);
         String line2 = event.getLine(2);
         
-        if(checkCommand(line1)) if(checkPermissions(player, blockBelow, loc, line2)) if(checkBlockBelow(player, blockBelow, loc)) checkItem(line2, loc, player);
+        if (checkCommand(line1)) {
+            int cb = checkBlock(player, loc, x, y, z);
+            if (cb == 1) if (checkPermissions(player, player.getWorld().getBlockAt(x,y-1,z), loc, line2)) checkItem(line2, loc, player);
+            if (cb == -1) if (checkPermissions(player, player.getWorld().getBlockAt(x,y+1,z), loc, line2)) checkItem(line2, loc, player);
+            if (cb == 2) {
+                dropSign(loc, player.getWorld());
+                player.sendMessage("[RestockIt] This is already a RestockIt container");
+                player.sendMessage("[RestockIt] Remember, a RestockIt sign can be below or above a container");
+            }
+        }
     }
     
     @Override
@@ -82,12 +90,25 @@ public class RIbl extends BlockListener {
         return true;
     }
     
-    public boolean checkBlockBelow(Player player, Block block, Location loc) {
-        if(block.getType() == Material.CHEST) return true;
-        else if(block.getType() == Material.DISPENSER) return true;
+    public int checkBlock(Player player, Location loc, int x, int y, int z) {
+        Block block = player.getWorld().getBlockAt(x, y-1, z);
+        if(block.getType() == Material.CHEST) if(!chestAllocated(x,y-2,z,player)) return 1; else return 2;
+        if(block.getType() == Material.DISPENSER) if(!chestAllocated(x,y-2,z,player)) return 1; else return 2;
+        block = player.getWorld().getBlockAt(x, y+1, z);
+        if(block.getType() == Material.CHEST) if(!chestAllocated(x,y+2,z,player)) return -1; else return 2;
+        if(block.getType() == Material.DISPENSER) if(!chestAllocated(x,y+2,z,player)) return -1; else return 2;
         player.sendMessage("[RestockIt] No chest or dispenser was found");
-        player.sendMessage("[RestockIt] Ensure you placed the sign directly above the chest or dispenser");
+        player.sendMessage("[RestockIt] Ensure you placed the sign directly above or below the chest or dispenser");
         dropSign(loc, player.getWorld());
+        return 0;
+    }
+    
+    public boolean chestAllocated(int x,int y,int z, Player player) {
+        Block sign = player.getWorld().getBlockAt(x,y,z);
+        if (sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) {
+            String string = ((Sign)sign.getState()).getLine(1);
+            if (checkCommand(string)) return true;
+        }
         return false;
     }
     

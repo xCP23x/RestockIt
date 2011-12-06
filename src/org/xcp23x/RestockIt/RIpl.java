@@ -29,11 +29,13 @@ public class RIpl extends PlayerListener {
     
     public static void checkSign(Block chest) {
         if((chest.getType() == Material.CHEST) || (chest.getType() == Material.DISPENSER)) {
-            int signx = chest.getX();
-            int signy = chest.getY() + 1;
-            int signz = chest.getZ();
-            Block sign = chest.getWorld().getBlockAt(signx,signy,signz);
-            if((sign.getType() == Material.WALL_SIGN) || sign.getType() == Material.SIGN_POST) {
+            Block sign = null;
+            Block m = chest.getWorld().getBlockAt(chest.getX(),chest.getY()-1,chest.getZ()); 
+            Block p = chest.getWorld().getBlockAt(chest.getX(),chest.getY()+1,chest.getZ());
+            if(m.getType() == Material.WALL_SIGN || m.getType() == Material.SIGN_POST) sign = m;
+            if(p.getType() == Material.WALL_SIGN || p.getType() == Material.SIGN_POST) sign = p;
+            
+            if(sign != null) {
                 Material item = Material.AIR;
                 Inventory inventory = null;
                 if (chest.getType() == Material.CHEST) {inventory = ((Chest)chest.getState()).getInventory();}
