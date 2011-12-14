@@ -32,32 +32,44 @@ public class RIpl extends PlayerListener {
             Block sign = null;
             Block m = chest.getWorld().getBlockAt(chest.getX(),chest.getY()-1,chest.getZ()); 
             Block p = chest.getWorld().getBlockAt(chest.getX(),chest.getY()+1,chest.getZ());
-            if(m.getType() == Material.WALL_SIGN || m.getType() == Material.SIGN_POST) sign = m;
-            if(p.getType() == Material.WALL_SIGN || p.getType() == Material.SIGN_POST) sign = p;
             
-            if(sign != null) {
-                Material item = Material.AIR;
-                Inventory inventory = null;
-                if (chest.getType() == Material.CHEST) {inventory = ((Chest)chest.getState()).getInventory();}
-                else {inventory = ((Dispenser)chest.getState()).getInventory();}
-                String line1 = ((Sign)sign.getState()).getLine(1);
-                String line2 = ((Sign)sign.getState()).getLine(2);
-                String itemID = line2;
-                short damage = -1;
-                if(line2.contains(":")) {
-                    itemID = line2.split(":")[0];
-                    String split = line2.split(":")[1];
-                    damage = Short.parseShort(split);
-                }
-                if(RIbl.checkCommand(line1)){
-                    if (line2.equalsIgnoreCase("Incinerator")) {
-                        item = Material.AIR;
-                    } else item = getMaterial(itemID);
-                    fillChest(item, inventory, damage);
+            if(p.getType() == Material.WALL_SIGN || p.getType() == Material.SIGN_POST) {
+                String line1 =((Sign)p.getState()).getLine(1);
+                if(RIbl.checkCommand(line1)) {
+                    readSign(chest, p, line1);
+                    return;
                 }
             }
+            if (m.getType() == Material.WALL_SIGN || m.getType() == Material.SIGN_POST) {
+                String line1 =((Sign)m.getState()).getLine(1);
+                if(RIbl.checkCommand(line1)) readSign(chest, m, line1);
+            }
         }
+    }    
+            
+    public static void readSign(Block chest, Block sign, String line1){
+        if(sign == null) return;
+        Material item = Material.AIR;
+        Inventory inventory = null;
+        if (chest.getType() == Material.CHEST) {inventory = ((Chest)chest.getState()).getInventory();}
+        else {inventory = ((Dispenser)chest.getState()).getInventory();}
+        String line2 = ((Sign)sign.getState()).getLine(2);
+        String itemID = line2;
+        short damage = -1;
+        if(line2.contains(":")) {
+            itemID = line2.split(":")[0];
+            String split = line2.split(":")[1];
+            damage = Short.parseShort(split);
+        }
+        else if(RIbl.checkCommand(line1)){
+            if (line2.equalsIgnoreCase("Incinerator")) {
+                item = Material.AIR;
+            } else item = getMaterial(itemID);
+            fillChest(item, inventory, damage);
+        }    
     }
+    
+
     
     public static Material getMaterial(String line2) {
         int ID = RIbl.checkID(line2);
