@@ -61,15 +61,13 @@ public class RIpl extends PlayerListener {
             String split = line2.split(":")[1];
             damage = Short.parseShort(split);
         }
-        else if(RIbl.checkCommand(line1)){
+        if(RIbl.checkCommand(line1)){
             if (line2.equalsIgnoreCase("Incinerator")) {
                 item = Material.AIR;
             } else item = getMaterial(itemID);
             fillChest(item, inventory, damage);
-        }    
+        }
     }
-    
-
     
     public static Material getMaterial(String line2) {
         int ID = RIbl.checkID(line2);
