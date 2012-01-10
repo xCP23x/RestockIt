@@ -1,6 +1,5 @@
 //@author Chris Price (xCP23x)
 
-
 package org.xcp23x.RestockIt;
 
 import org.bukkit.Material;

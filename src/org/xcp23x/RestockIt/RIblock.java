@@ -1,6 +1,5 @@
 //@author Chris Price (xCP23x)
 
-
 package org.xcp23x.RestockIt;
 
 import org.bukkit.Location;
@@ -32,6 +31,7 @@ public class RIblock extends BlockListener {
         
         String line1 = event.getLine(1);
         String line2 = event.getLine(2);
+        Block block = event.getBlock();
         
         if (RIcheck.checkCommand(line1)) {
             //Check if the chest/dispenser is above or below the sign, or already claimed
@@ -43,9 +43,19 @@ public class RIblock extends BlockListener {
             //0  = No container found (ignored)
             
             //Check perms if container is below the sign, then check item requested exists
-            if (cb == 1 && RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y-1,z), loc, line2)) {RIcheck.checkItem(line2, loc, player);}
+            if (cb == 1 && RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y-1,z), loc, line2)) {
+                RIcheck.checkItem(line2, loc, player);
+                RestockIt.startTimer(block, 1000, 20);
+            }
+            
+            
             //Check perms if container is above the sign, then check item requested exists
-            if (cb == -1 && RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y+1,z), loc, line2)) {RIcheck.checkItem(line2, loc, player);}
+            if (cb == -1 && RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y+1,z), loc, line2)) {
+                RIcheck.checkItem(line2, loc, player);
+                RestockIt.startTimer(block, 1000, 20);
+            }
+            
+            
             //Remove sign if chest allocated
             if (cb == 2) {
                 RestockIt.dropSign(loc, player.getWorld());

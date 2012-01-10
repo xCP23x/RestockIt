@@ -14,7 +14,7 @@ import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class RIcheck{
-
+    
     public static boolean checkCommand(String line1) {
         //Check if player is actually making a RestockIt chest. (Accepts fullchest syntax)
         if (line1.equalsIgnoreCase("Full Chest") || line1.equalsIgnoreCase("Full Dispenser") || line1.equalsIgnoreCase("RestockIt") || line1.equalsIgnoreCase("Restock It")) {
@@ -66,7 +66,7 @@ public class RIcheck{
         Block sign = player.getWorld().getBlockAt(x, y, z);
         if (sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) {
             String string = ((Sign) sign.getState()).getLine(1);
-            if (checkCommand(string)) {
+            if (checkCommand(string)) {          
                 return true;
             }
         }
