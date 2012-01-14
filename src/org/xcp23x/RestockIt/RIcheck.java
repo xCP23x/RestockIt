@@ -1,6 +1,5 @@
 //@author Chris Price (xCP23x)
 
-
 package org.xcp23x.RestockIt;
 
 import org.bukkit.Bukkit;
@@ -61,9 +60,8 @@ public class RIcheck{
         }
     }
 
-    public static boolean checkAllocated(int x, int y, int z, Player player) {
+    public static boolean checkAllocated(Block sign) {
         //Check if the chest is already allocated as RestockIt (return true if it is)
-        Block sign = player.getWorld().getBlockAt(x, y, z);
         if (sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) {
             String string = ((Sign) sign.getState()).getLine(1);
             if (checkCommand(string)) {          
@@ -73,47 +71,49 @@ public class RIcheck{
         return false;
     }
 
-    public static int checkBlock(Player player, Location loc, int x, int y, int z) {
+    public static int checkBlock(Block sign) {
         //Check below the sign - return 1 if it's unallocated, 2 if allocated, else continue if no container
-        Block block = player.getWorld().getBlockAt(x, y - 1, z);
+        
+        Block block = sign.getWorld().getBlockAt(sign.getX(), sign.getY()-1, sign.getZ());
+        int x = block.getX(), y = block.getY(), z = block.getZ();
         if (block.getType() == Material.CHEST) {
-            if (!checkAllocated(x, y - 2, z, player)) {
+            if (!checkAllocated(block.getWorld().getBlockAt(x, y-2, z))) {
                 return 1;
+            } else {
+                return 2;
             }
-        } else {
-            return 2;
         }
+        
         if (block.getType() == Material.DISPENSER) {
-            if (!checkAllocated(x, y - 2, z, player)) {
+            if (!checkAllocated(block.getWorld().getBlockAt(x, y-2, z))) {
                 return 1;
+            } else {
+                return 2;
             }
-        } else {
-            return 2;
         }
+        
         //Check above the sign - return -1 if it's unallocated, 2 if allocated, else continue if no container
-        block = player.getWorld().getBlockAt(x, y + 1, z);
+        block = sign.getWorld().getBlockAt(sign.getX(), sign.getY()+1, sign.getZ());
         if (block.getType() == Material.CHEST) {
-            if (!checkAllocated(x, y + 2, z, player)) {
+            if (!checkAllocated(block.getWorld().getBlockAt(x, y+2, z))) {
                 return 1;
             } else {
                 return 2;
             }
         }
+        
         if (block.getType() == Material.DISPENSER) {
-            if (!checkAllocated(x, y + 2, z, player)) {
+            if (!checkAllocated(block.getWorld().getBlockAt(x, y+2, z))) {
                 return 1;
             } else {
                 return 2;
             }
         }
-        //No chest or dispenser found
-        player.sendMessage("[RestockIt] No chest or dispenser was found");
-        player.sendMessage("[RestockIt] Ensure you placed the sign directly above or below the chest or dispenser");
-        RestockIt.dropSign(loc, player.getWorld());
         return 0;
     }
 
     public static void checkItem(String line2, Location loc, Player player) {
+      //  String line2 = ((Sign)(loc.getBlock()).getState()).getLine(2);
         World world = player.getWorld();
         int id = checkID(line2);
         //ID  0 = It's not an int, not an ID
@@ -149,8 +149,8 @@ public class RIcheck{
         }
     }
 
-    public static boolean checkPermissions(Player player, Block block, Location loc, String line) {
-        Material material = block.getType();
+    public static boolean checkPermissions(Player player, Material material, Location loc) {
+        String line = ((Sign)(loc.getBlock()).getState()).getLine(2);
         //Check if PermissionsEx is in use
         if (Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx")) {
             //Set PermissionsEx as the perms manager

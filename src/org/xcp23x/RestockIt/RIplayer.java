@@ -36,6 +36,7 @@ public class RIplayer extends PlayerListener {
             
             if(p.getType() == Material.WALL_SIGN || p.getType() == Material.SIGN_POST) {
                 String line1 =((Sign)p.getState()).getLine(1);
+                RIschedule.startSchedule(p, 20, 20, plugin.getServer());
                 if(RIcheck.checkCommand(line1)) {
                     readSign(chest, p, line1);
                     return; //We don't want to know about the sign below the chest, so return
@@ -44,6 +45,7 @@ public class RIplayer extends PlayerListener {
             if (m.getType() == Material.WALL_SIGN || m.getType() == Material.SIGN_POST) {
                 String line1 =((Sign)m.getState()).getLine(1);
                 if(RIcheck.checkCommand(line1)) {readSign(chest, m, line1);}
+                //RestockIt.startTimer(m, 1000, 20, plugin.getServer());
             }
         }
     }    
