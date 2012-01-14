@@ -46,7 +46,7 @@ public class RIblock extends BlockListener {
                     //Check perms if container is below the sign, then check item requested exists
                     if(RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y-1,z).getType(), loc)){
                         RIcheck.checkItem(line2, loc, player);
-                        RIschedule.startSchedule(block, 20, 20, plugin.getServer());
+                        RIschedule.startSchedule(block, 20, 20, plugin.getServer()); //Start the schedule for this sign
                     }
                     break;
                     
@@ -54,7 +54,7 @@ public class RIblock extends BlockListener {
                     //Check perms if container is above the sign, then check item requested exists
                     if(RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y+1,z).getType(), loc)) {
                         RIcheck.checkItem(line2, loc, player);
-                        RIschedule.startSchedule(block, 20, 20, plugin.getServer());
+                        RIschedule.startSchedule(block, 20, 20, plugin.getServer()); //Start the schedule for this sign
                     }
                     break;
                     
