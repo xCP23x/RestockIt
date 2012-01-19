@@ -102,4 +102,4 @@ public class RIplayer extends PlayerListener {
             
         } else {inv.clear();} //Clear inventory if air is requested (see, there WAS a reason for setting it as air)
     }
-}
+} 

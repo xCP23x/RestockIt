@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
-public class RIschedule {
+class RIschedule {
     
     //X,Y,Z coords of block, as well as the bukkit task ID are stored in hashmaps
     private static HashMap<Integer, HashMap<Integer, HashMap<Integer, Integer>>> sched = new HashMap<Integer, HashMap<Integer, HashMap<Integer, Integer>>>();
@@ -34,22 +34,12 @@ public class RIschedule {
                        return;
                     }
                 }
-                switch(RIcheck.checkID(((Sign)state).getLine(3))){
-                    
-                    //If 1 or -1 is returned, it's an integer so can be added to
-                    case 1:
-                        ((Sign)state).setLine(3, String.valueOf(Integer.parseInt(((Sign)state).getLine(3)) + 1)); //Adds 1 to the current value
-                        break;
-                        
-                    case -1:
-                        ((Sign)state).setLine(3, String.valueOf(Integer.parseInt(((Sign)state).getLine(3)) + 1));
-                        break;
-                        
-                    default:
-                        ((Sign)state).setLine(3, "0"); //Set it to 0, used to initialise the sign, will start counting on next tick
-                        break;
-                }
                 
+                if(RIcheck.checkID(((Sign)state).getLine(3)) <= 0) {
+                    ((Sign)state).setLine(3, "1"); //Set it to 1, used to initialise the sign, will start counting on next tick
+                } else {
+                    ((Sign)state).setLine(3, String.valueOf(Integer.parseInt(((Sign)state).getLine(3)) + 1)); //Adds 1 to the current value
+                }
                 state.update(); //Save changes to the sign
             }
             
