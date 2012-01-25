@@ -12,14 +12,13 @@ import org.bukkit.event.block.SignChangeEvent;
 
 public class RIblock extends BlockListener {
     public static RestockIt plugin;
-    public RIblock(RestockIt instance) {
-        plugin = instance;
-    }
+    public RIblock(RestockIt instance) {plugin = instance;}
     
     @Override
     public void onSignChange(SignChangeEvent event) {
         //Check and fix a common error (forgotten blank line)
         if (RIcheck.checkCommand(event.getLine(0))) {
+            event.setLine(3, event.getLine(2));
             event.setLine(2, event.getLine(1));
             event.setLine(1, event.getLine(0));
             event.setLine(0, "");
@@ -27,8 +26,9 @@ public class RIblock extends BlockListener {
         
         Location loc = event.getBlock().getLocation();
         Player player = event.getPlayer();
-        String line1 = event.getLine(1);
-        String line2 = event.getLine(2);
+        String[] lines = event.getLines();
+        String line1 = lines[1];
+        String line2 = lines[2];
         Block block = event.getBlock();
         int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
         
@@ -46,7 +46,10 @@ public class RIblock extends BlockListener {
                     //Check perms if container is below the sign, then check item requested exists
                     if(RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y-1,z), loc.getBlock())){
                         RIcheck.checkItem(line2, loc, player);
-                        RIschedule.startSchedule(block, 20, 20, plugin.getServer()); //Start the schedule for this sign
+                        String nline3 = RIdelay.prepareLines(lines);
+                        String line3 = nline3 == null ? "" : nline3;
+                        event.setLine(3, line3);
+                        RIschedule.startSchedule(block, RIdelay.getPeriod(line3)); //Start the schedule for this sign
                     } else RestockIt.dropSign(block.getLocation(), player.getWorld());
                     break;
                     
@@ -54,7 +57,11 @@ public class RIblock extends BlockListener {
                     //Check perms if container is above the sign, then check item requested exists
                     if(RIcheck.checkPermissions(player, player.getWorld().getBlockAt(x,y+1,z), loc.getBlock())) {
                         RIcheck.checkItem(line2, loc, player);
-                        RIschedule.startSchedule(block, 20, 20, plugin.getServer()); //Start the schedule for this sign
+                        String nline3 = RIdelay.prepareLines(lines);
+                        String line3 = nline3 == null ? "" : nline3;
+                        event.setLine(3, line3);
+                        RIschedule.startSchedule(block, RIdelay.getPeriod(line3)); //Start the schedule for this sign
+                        
                     } else RestockIt.dropSign(block.getLocation(), player.getWorld());
                     break;
                     

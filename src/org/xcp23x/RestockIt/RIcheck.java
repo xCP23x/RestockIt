@@ -15,6 +15,9 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 class RIcheck{
     
+    public static RestockIt plugin;
+    public RIcheck(RestockIt instance) {plugin = instance;}
+    
     public static boolean checkCommand(String line1) {
         if (line1.equalsIgnoreCase("Full Chest") || line1.equalsIgnoreCase("Full Dispenser") || line1.equalsIgnoreCase("RestockIt") || line1.equalsIgnoreCase("Restock It")) {
             return true;
@@ -138,7 +141,7 @@ class RIcheck{
         }
     }
 
-    public static boolean checkPermissions(Player player, Block sign, Block container) {
+    public static boolean checkPermissions(Player player, Block container, Block sign) {
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
         String line = ((Sign)sign.getState()).getLine(2); 
 
