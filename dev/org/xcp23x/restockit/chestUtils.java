@@ -18,10 +18,10 @@ public class chestUtils {
     public static Inventory getInventory(Block container){
         Material mat = container.getType();
         if(mat == Material.CHEST){
-            return ((Chest)container).getInventory();
+            return ((Chest)container.getState()).getInventory();
         }
         else if(mat == Material.DISPENSER){
-            return ((Dispenser)container).getInventory();
+            return ((Dispenser)container.getState()).getInventory();
         }
         else return null;
     }
@@ -29,7 +29,6 @@ public class chestUtils {
     public static boolean isSignAboveChest(Block chest) {
         if((chest.getType() == Material.CHEST) || (chest.getType() == Material.DISPENSER)) {
             Block sign = signUtils.getSignAboveChest(chest);
-            RestockIt.log.info(sign.toString());
             if(sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) {
                 if(signUtils.isRIsign(sign)) return true;
             }

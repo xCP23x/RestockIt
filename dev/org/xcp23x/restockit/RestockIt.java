@@ -13,6 +13,7 @@ public class RestockIt extends JavaPlugin {
     
     @Override
     public void onEnable(){
+        plugin = this;
         getServer().getPluginManager().registerEvents(new listeners(), this);
         PluginDescriptionFile pdfFile = this.getDescription();
         RestockIt.log.info("[RestockIt] v" + pdfFile.getVersion() + " Started");

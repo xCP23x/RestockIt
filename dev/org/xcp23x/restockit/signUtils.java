@@ -20,25 +20,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class signUtils {
     
-    public static Material getMaterial(Block sign){
-        String line = ((Sign)sign).getLine(1);
-        String matStr = (line.indexOf(":") >= 0 ? line : line+":0").split(":")[0];
-        return Material.getMaterial(matStr);
+    public static Material getMaterial(Block block){
+        return getType(block) > 0 ? Material.getMaterial(getType(block)) : Material.AIR;
     }
     
-    public static short getDamage(Block sign) {
-        String line = ((Sign)sign).getLine(1);
+    public static short getDamage(Block block) {
+        Sign sign = (Sign)block.getState();
+        String line = sign.getLine(2);
         String dmgStr = (line.indexOf(":") >= 0 ? line : line+":0").split(":")[1];
         return Short.parseShort(dmgStr);
     }
     
-    public static int getType(Block sign) {
-        String line = ((Sign)sign).getLine(1);
+    public static int getType(Block block) {
+        Sign sign = (Sign)block.getState();
+        String line = sign.getLine(2);
         if (line.equalsIgnoreCase("Incinerator")) {
             return 0;
         }
         Material t;
-	String sa[] = (line.indexOf(":") >= 0 ? line : line+":0").split(":");
+	String sa[] = (line.indexOf(":") ==1 ? line : line+":0").split(":");
         
 	if ((t = Material.getMaterial(sa[0])) == null) {
             try {
@@ -59,39 +59,47 @@ public class signUtils {
 	return t.getId();
     }
     
-    public static void setMaxItems(int items, Block sign) {
-        String part = ((Sign)sign).getLine(3).split(",")[1];
-        ((Sign)sign).setLine(3, items + "," + part);
+    public static void setMaxItems(int items, Block block) {
+        Sign sign = (Sign)block.getState();
+        String part = sign.getLine(3).split(",")[1];
+        sign.setLine(3, items + "," + part);
+        sign.update();
     }
     
-    public static int getMaxItems(Block sign) {
-        String str = ((Sign)sign).getLine(3).contains(",") ? ((Sign)sign).getLine(3).split(",")[0].toLowerCase() : null;
-        return (str.contains("s") || str.contains("stacks")) ? Integer.parseInt(str.replaceAll("stacks", "").replaceAll("s", ""))*getMaterial(sign).getMaxStackSize() : 0;
+    public static int getMaxItems(Block block) {
+        Sign sign = (Sign)block.getState();
+        String str = sign.getLine(3).contains(",") ? sign.getLine(3).split(",")[0].toLowerCase() : null;
+        if(str==null) return 0;
+        return (str.contains("s") || str.contains("stacks")) ? Integer.parseInt(str.replaceAll("stacks", "").replaceAll("s", ""))*getMaterial(sign.getBlock()).getMaxStackSize() : 0;
     }
     
-    public static void setPeriod(float period, Block sign) {
-        String part1 = ((Sign)sign).getLine(3).split(",")[0];
+    public static void setPeriod(float period, Block block) {
+        Sign sign = (Sign)block.getState();
+        String part1 = sign.getLine(3).split(",")[0];
         String part2 = period%20 == 0 ? period/20 + "s" : period + "t";
-        ((Sign)sign).setLine(3, part1 + ", " + part2);
+        sign.setLine(3, part1 + ", " + part2);
+        sign.update();
     }
     
-    public static int getPeriod(Block sign) {
-        String periodStr = ((Sign)sign).getLine(3).contains(",") ? ((Sign)sign).getLine(3).split(",")[1].replaceAll(" ", "").replaceAll("t", "") : "0";
-        return periodStr.contains("s") ? Integer.parseInt(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
+    public static int getPeriod(Block block) {
+        Sign sign = (Sign)block.getState();
+        String periodStr = sign.getLine(3).contains(",") ? sign.getLine(3).split(",")[1].replaceAll(" ", "") : "0";
+        return periodStr.contains("s") ? Short.parseShort(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
     }
     
-    public static boolean isRIsign(Block sign){
-        if (sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) {
-            String line0 = ((Sign)sign).getLine(0).toLowerCase();
-            String line1 = ((Sign)sign).getLine(1).toLowerCase();
+    public static boolean isRIsign(Block block){
+        if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
+            Sign sign = (Sign)block.getState();
+            String line0 = sign.getLine(0).toLowerCase();
+            String line1 = sign.getLine(1).toLowerCase();
             if(line1.contains("restockit") || line1.contains("restock it") || line1.contains("full chest") || line1.contains("full dispenser")) {
                 return true;
             } else if(line0.contains("restockit") || line0.contains("restock it") || line0.contains("full chest") || line0.contains("full dispenser")) {
-                Sign sgn = ((Sign)sign);
-                sgn.setLine(3, sgn.getLine(2));
-                sgn.setLine(2, sgn.getLine(1));
-                sgn.setLine(1, sgn.getLine(0));
-                sgn.setLine(0, "");
+                sign.setLine(3, sign.getLine(2));
+                sign.setLine(2, sign.getLine(1));
+                sign.setLine(1, sign.getLine(0));
+                sign.setLine(0, "");
+                sign.update();
                 return true;
             }
         }
