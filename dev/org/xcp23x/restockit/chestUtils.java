@@ -4,26 +4,21 @@ package org.xcp23x.restockit;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Dispenser;
+import org.bukkit.block.ContainerBlock;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class chestUtils {
     
-    public static int getCurrentItems(Material item, Block sign) {
+    public static int getCurrentItems(Material item, Block chest) {
+        
+        //TODO
+        
         return 0;
     }
     
     public static Inventory getInventory(Block container){
-        Material mat = container.getType();
-        if(mat == Material.CHEST){
-            return ((Chest)container.getState()).getInventory();
-        }
-        else if(mat == Material.DISPENSER){
-            return ((Dispenser)container.getState()).getInventory();
-        }
-        else return null;
+        return ((ContainerBlock)container.getState()).getInventory();
     }
     
     public static boolean isSignAboveChest(Block chest) {
@@ -73,6 +68,17 @@ public class chestUtils {
             }
         }
         return false;
+    }
+    
+    public static Block getChestFromSign(Block sign) {
+        if(isSignAboveChest(sign.getWorld().getBlockAt(sign.getX(), sign.getY() - 1, sign.getZ()))) {
+            return sign.getWorld().getBlockAt(sign.getX(), sign.getY() - 1, sign.getZ());
+        }
+        
+        if(isSignBelowChest(sign.getWorld().getBlockAt(sign.getX(), sign.getY() + 1, sign.getZ()))) {
+            return sign.getWorld().getBlockAt(sign.getX(), sign.getY() + 1, sign.getZ());
+        }
+        return null;
     }
     
     public static void fillChest(Block chest){

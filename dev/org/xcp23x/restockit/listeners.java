@@ -4,6 +4,7 @@ package org.xcp23x.restockit;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -23,7 +24,42 @@ public class listeners implements Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         Block sign = event.getBlock();
+        Player player = event.getPlayer();
+        
         if(signUtils.isRIsign(sign)){
+            
+            if(chestUtils.getChestFromSign(sign) == null){
+                signUtils.dropSign(sign);
+                playerUtils.sendPlayerMessage(player, 6);
+                return;
+            }
+            
+            if(chestUtils.isAlreadyRIchest(sign)) {
+                playerUtils.sendPlayerMessage(player, 1);
+                signUtils.dropSign(sign);
+                return;
+            }
+            
+            if(signUtils.isIncinerator(sign)) {
+                eventTriggered(sign);
+                return;
+            }
+            
+            if(signUtils.hasErrors(sign, player)) {
+                signUtils.dropSign(sign);
+                return;
+            }
+            
+            //For debug
+            //player.sendMessage(chestUtils.getChestFromSign(sign).getType().name().toLowerCase());
+            
+            if(!playerUtils.hasPermissions(player, chestUtils.getChestFromSign(sign), sign)){
+                signUtils.dropSign(sign);
+                playerUtils.sendPlayerMessage(player, 2, chestUtils.getChestFromSign(sign).getType().name().toLowerCase());
+                return;
+            }
+            
+            eventTriggered(sign);
             
         }
     }
@@ -36,12 +72,22 @@ public class listeners implements Listener {
         }
     }
     
-    public void eventTriggered(Block chest){
-        if(chestUtils.isRIchest(chest)) {
-            Block sign = signUtils.getSignFromChest(chest);
+    public void eventTriggered(Block block){
+        Block sign = null;
+        Block chest = null;
+        
+        if(chestUtils.isRIchest(block)) {
+            sign = signUtils.getSignFromChest(block);
+            chest = block;
+        } else if(signUtils.isRIsign(block)) {
+            sign = block;
+            chest = chestUtils.getChestFromSign(block);
+        }
+        
+        if(sign != null){
             if(signUtils.isDelayedSign(sign)){
                 scheduler.startSchedule(sign, signUtils.getPeriod(sign));
-            } else chestUtils.fillChest(chest);
+            } else if(chest != null) chestUtils.fillChest(chest);
         }
     }
 }

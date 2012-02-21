@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 //Blank
@@ -88,6 +89,7 @@ public class signUtils {
     }
     
     public static boolean isRIsign(Block block){
+        
         if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
             Sign sign = (Sign)block.getState();
             String line0 = sign.getLine(0).toLowerCase();
@@ -117,6 +119,12 @@ public class signUtils {
         return true;
     }
     
+    public static boolean isIncinerator(Block block) {
+        Sign sign = (Sign)block.getState();
+        if(sign.getLine(2).toLowerCase().contains("incinerator")) return true;
+        return false;
+    }
+    
     public static Block getSignFromChest(Block chest) {
         if(chestUtils.isSignAboveChest(chest)) return getSignAboveChest(chest);
         if(chestUtils.isSignBelowChest(chest)) return getSignBelowChest(chest);
@@ -129,5 +137,23 @@ public class signUtils {
     
     public static Block getSignBelowChest(Block chest) {
         return chest.getWorld().getBlockAt(chest.getX(), chest.getY() -1, chest.getZ());
+    }
+    
+    public static boolean hasErrors(Block sign, Player player) {
+        
+        String line = ((Sign)sign.getState()).getLine(2);
+        
+        switch(getType(sign)){
+            case -3:
+                playerUtils.sendPlayerMessage(player, 5, line.split(":")[1]);
+                return true;
+            case -2:
+                playerUtils.sendPlayerMessage(player, 4, line.contains(":") ? line.split(":")[0] : line);
+                return true;
+            case -1:
+                playerUtils.sendPlayerMessage(player, 3, line.contains(":") ? line.split(":")[0] : line);
+                return true;
+        }
+        return false;
     }
 }
