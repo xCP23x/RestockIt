@@ -1,4 +1,20 @@
 name: RestockIt
-main: org.xcp23x.RestockIt.RestockIt
-version: 1.6-Dev
+main: org.xcp23x.restockit.RestockIt
+version: 1.6
 commands:
+permissions:
+  restockit.*:
+    description: Gives access to all RestockIt permisions
+    children:
+      restockit.chest: true
+      restockit.dispenser: true
+      restockit.incierator: true
+  restockit.chest:
+    description: Allows you to create a RestockIt chest
+    default: op
+  restockit.dispenser:
+    description: Allows you to create a RestockIt dispenser
+    default: op
+  restockit.incinerator:
+    description: Allows you to create a RestockIt incinerator
+    default: true
