@@ -60,7 +60,7 @@ public class chestUtils {
     public static boolean isAlreadyRIchest(Block sign) {
         //Check below the sign
         Block block = sign.getWorld().getBlockAt(sign.getX(), sign.getY()-1, sign.getZ());
-        int x = block.getX(), y = block.getY(), z = block.getZ();
+        int x = sign.getX(), y = sign.getY(), z = sign.getZ();
         Block posSign = block.getWorld().getBlockAt(x, y-2, z);
         if ((block.getType() == Material.CHEST || block.getType() == Material.DISPENSER) && (posSign.getType() == Material.WALL_SIGN || posSign.getType() == Material.SIGN_POST)) {
             return (signUtils.isRIsign(((Sign)posSign.getState()).getLine(1)));
