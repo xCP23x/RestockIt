@@ -5,6 +5,7 @@ package org.xcp23x.restockit;
 import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
 
 public class scheduler {
@@ -25,16 +26,18 @@ public class scheduler {
                 }
                 
                 Block chest = chestUtils.getChestFromSign(block);
+                String line2 = ((Sign)block.getState()).getLine(2);
+                String line3 = ((Sign)block.getState()).getLine(3);
                 
-                if(chestUtils.getCurrentItems(signUtils.getMaterial(block), block) >= signUtils.getMaxItems(block)) {
+                if(chestUtils.getCurrentItems(signUtils.getMaterial(line2), block) >= signUtils.getMaxItems(line3)) {
                     scheduler.stopSchedule(block);
                     return;
                 }
                 
                 //Add item to chest
-                ItemStack stack = new ItemStack(signUtils.getMaterial(block), 1);
+                ItemStack stack = new ItemStack(signUtils.getMaterial(line2), 1);
                 chestUtils.getInventory(chest).addItem(stack);
-                RestockIt.log.info("Add one item until full with " + signUtils.getMaxItems(block) + " items");
+                RestockIt.log.info("Add one item until full with " + signUtils.getMaxItems(line3) + " items");
             }
             
         },0,period));

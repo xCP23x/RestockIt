@@ -21,20 +21,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class signUtils {
     
-    public static Material getMaterial(Block block){
-        return getType(block) > 0 ? Material.getMaterial(getType(block)) : Material.AIR;
+    public static Material getMaterial(String line){
+        return getType(line) > 0 ? Material.getMaterial(getType(line)) : Material.AIR;
     }
     
-    public static short getDamage(Block block) {
-        Sign sign = (Sign)block.getState();
-        String line = sign.getLine(2);
+    public static short getDamage(String line) {
         String dmgStr = (line.indexOf(":") >= 0 ? line : line+":0").split(":")[1];
         return Short.parseShort(dmgStr);
     }
     
-    public static int getType(Block block) {
-        Sign sign = (Sign)block.getState();
-        String line = sign.getLine(2);
+    public static int getType(String line) {
         if (line.equalsIgnoreCase("Incinerator")) {
             return 0;
         }
@@ -67,11 +63,10 @@ public class signUtils {
         sign.update();
     }
     
-    public static int getMaxItems(Block block) {
-        Sign sign = (Sign)block.getState();
-        String str = sign.getLine(3).contains(",") ? sign.getLine(3).split(",")[0].toLowerCase() : null;
+    public static int getMaxItems(String line) {
+        String str = line.contains(",") ? line.split(",")[0].toLowerCase() : null;
         if(str==null) return 0;
-        return (str.contains("s") || str.contains("stacks")) ? Integer.parseInt(str.replaceAll("stacks", "").replaceAll("s", ""))*getMaterial(sign.getBlock()).getMaxStackSize() : 0;
+        return (str.contains("s") || str.contains("stacks")) ? Integer.parseInt(str.replaceAll("stacks", "").replaceAll("s", ""))*getMaterial(line).getMaxStackSize() : 0;
     }
     
     public static void setPeriod(float period, Block block) {
@@ -82,30 +77,14 @@ public class signUtils {
         sign.update();
     }
     
-    public static int getPeriod(Block block) {
-        Sign sign = (Sign)block.getState();
-        String periodStr = sign.getLine(3).contains(",") ? sign.getLine(3).split(",")[1].replaceAll(" ", "") : "0";
+    public static int getPeriod(String line) {
+        String periodStr = line.contains(",") ? line.split(",")[1].replaceAll(" ", "") : "0";
         return periodStr.contains("s") ? Short.parseShort(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
     }
     
-    public static boolean isRIsign(Block block){
-        
-        if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
-            Sign sign = (Sign)block.getState();
-            String line0 = sign.getLine(0).toLowerCase();
-            String line1 = sign.getLine(1).toLowerCase();
-            if(line1.contains("restockit") || line1.contains("restock it") || line1.contains("full chest") || line1.contains("full dispenser")) {
-                return true;
-            } else if(line0.contains("restockit") || line0.contains("restock it") || line0.contains("full chest") || line0.contains("full dispenser")) {
-                sign.setLine(3, sign.getLine(2));
-                sign.setLine(2, sign.getLine(1));
-                sign.setLine(1, sign.getLine(0));
-                sign.setLine(0, "");
-                sign.update();
-                return true;
-            }
-        }
-        return false;
+    public static boolean isRIsign(String line){
+        if(line.contains("restockit") || line.contains("restock it") || line.contains("full chest") || line.contains("full dispenser")) return true;
+        else return false;
     }
     
     public static void dropSign(Block sign) {
@@ -114,15 +93,14 @@ public class signUtils {
         sign.getWorld().dropItem(loc, new ItemStack(Material.SIGN, 1));
     }
     
-    public static boolean isDelayedSign(Block sign) {
-        if(getMaxItems(sign) == 0 || getPeriod(sign) == 0) return false;
+    public static boolean isDelayedSign(String line) {
+        if(getMaxItems(line) == 0 || getPeriod(line) == 0) return false;
         return true;
     }
     
-    public static boolean isIncinerator(Block block) {
-        Sign sign = (Sign)block.getState();
-        if(sign.getLine(2).toLowerCase().contains("incinerator")) return true;
-        return false;
+    public static boolean isIncinerator(String line) {
+        if(line.toLowerCase().contains("incinerator")) return true;
+        else return false;
     }
     
     public static Block getSignFromChest(Block chest) {
@@ -139,11 +117,9 @@ public class signUtils {
         return chest.getWorld().getBlockAt(chest.getX(), chest.getY() -1, chest.getZ());
     }
     
-    public static boolean hasErrors(Block sign, Player player) {
+    public static boolean line2hasErrors(String line, Player player) {
         
-        String line = ((Sign)sign.getState()).getLine(2);
-        
-        switch(getType(sign)){
+        switch(getType(line)){
             case -3:
                 playerUtils.sendPlayerMessage(player, 5, line.split(":")[1]);
                 return true;
