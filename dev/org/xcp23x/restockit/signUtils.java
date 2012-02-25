@@ -64,9 +64,22 @@ public class signUtils {
     }
     
     public static int getMaxItems(String line) {
-        String str = line.contains(",") ? line.split(",")[0].toLowerCase() : null;
+        String str = line.contains(",") ? line.split(",")[0].toLowerCase().replaceAll(" ", "") : null;
         if(str==null) return 0;
-        return (str.contains("s") || str.contains("stacks")) ? Integer.parseInt(str.replaceAll("stacks", "").replaceAll("s", ""))*getMaterial(line).getMaxStackSize() : 0;
+        
+        try {
+            if(str.contains("i") || str.contains("items") || str.contains("item")) {
+                return Integer.parseInt(str.replaceAll("items", "").replaceAll("i", "").replaceAll("item", ""));
+            }
+            
+            if(str.contains("s") || str.contains("stacks") || str.contains("stack")) {
+                return Integer.parseInt(str.replaceAll("stack", "").replaceAll("s", ""))*getMaterial(line).getMaxStackSize();
+            }
+            
+            return Integer.parseInt(str);
+        } catch(Exception ex){}
+        
+        return 0;
     }
     
     public static void setPeriod(float period, Block block) {
@@ -83,7 +96,8 @@ public class signUtils {
     }
     
     public static boolean isRIsign(String line){
-        if(line.contains("restockit") || line.contains("restock it") || line.contains("full chest") || line.contains("full dispenser")) return true;
+        String str = line.toLowerCase();
+        if(str.contains("restockit") || str.contains("restock it") || str.contains("full chest") || str.contains("full dispenser")) return true;
         else return false;
     }
     

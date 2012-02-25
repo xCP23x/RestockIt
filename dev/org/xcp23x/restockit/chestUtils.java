@@ -70,13 +70,12 @@ public class chestUtils {
     }
     
     public static Block getChestFromSign(Block sign) {
-        if(isSignAboveChest(sign.getWorld().getBlockAt(sign.getX(), sign.getY() - 1, sign.getZ()))) {
-            return sign.getWorld().getBlockAt(sign.getX(), sign.getY() - 1, sign.getZ());
-        }
+        Block chest = sign.getWorld().getBlockAt(sign.getX(), sign.getY() - 1, sign.getZ());
+        if(chest.getType() == Material.CHEST || chest.getType() == Material.DISPENSER) return chest;
         
-        if(isSignBelowChest(sign.getWorld().getBlockAt(sign.getX(), sign.getY() + 1, sign.getZ()))) {
-            return sign.getWorld().getBlockAt(sign.getX(), sign.getY() + 1, sign.getZ());
-        }
+        chest = sign.getWorld().getBlockAt(sign.getX(), sign.getY() + 1, sign.getZ());
+        if(chest.getType() == Material.CHEST || chest.getType() == Material.DISPENSER) return chest;
+        
         return null;
     }
     

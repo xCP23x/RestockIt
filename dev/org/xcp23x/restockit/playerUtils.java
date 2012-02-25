@@ -4,7 +4,6 @@ package org.xcp23x.restockit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -26,6 +25,7 @@ public class playerUtils {
     }
     
     public static void sendPlayerMessage(Player player, int number, String string) {
+        player.sendMessage("[RestockIt] Error " + number + ":");
         switch(number){
             case 2:
                 player.sendMessage("You do not have permission to create a RestockIt " + string);
@@ -45,9 +45,9 @@ public class playerUtils {
         }
     }
     
-    public static boolean hasPermissions(Player player, Block container, Block sign) {
+    public static boolean hasPermissions(Player player, Block container, String line) {
+        
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
-        String line = ((Sign)sign.getState()).getLine(2);
         String containerName = line.equalsIgnoreCase("incinerator") ? "incinerator" : container.getType().name().toLowerCase();
         
         if(pm == null) {
