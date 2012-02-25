@@ -12,10 +12,18 @@ import org.bukkit.inventory.ItemStack;
 public class chestUtils {
     
     public static int getCurrentItems(Material item, Block chest) {
+        int items = 0;
+        Inventory inv = getInventory(chest);
+        int stacks = inv.getSize();
         
-        //TODO
+        for(int x=0; x<stacks; x++) {
+            ItemStack stack = inv.getItem(x);
+            if(stack.getType() == item) {
+                items = items + stack.getAmount();
+            }
+        }
         
-        return 0;
+        return items;
     }
     
     public static Inventory getInventory(Block container){
@@ -55,16 +63,16 @@ public class chestUtils {
         int x = block.getX(), y = block.getY(), z = block.getZ();
         Block posSign = block.getWorld().getBlockAt(x, y-2, z);
         if ((block.getType() == Material.CHEST || block.getType() == Material.DISPENSER) && (posSign.getType() == Material.WALL_SIGN || posSign.getType() == Material.SIGN_POST)) {
-            if (!signUtils.isRIsign(((Sign)posSign).getLine(1))) return false;
-            else return true;
+            if (signUtils.isRIsign(((Sign)posSign).getLine(1))) return true;
+            else return false;
         }
         
         //Check above the sign
         block = sign.getWorld().getBlockAt(sign.getX(), sign.getY()+1, sign.getZ());
         posSign = block.getWorld().getBlockAt(x, y+2, z);
         if ((block.getType() == Material.CHEST || block.getType() == Material.DISPENSER) && (posSign.getType() == Material.WALL_SIGN || posSign.getType() == Material.SIGN_POST)) {
-            if (!signUtils.isRIsign(((Sign)posSign).getLine(1))) return false;
-            else return true;
+            if (signUtils.isRIsign(((Sign)posSign).getLine(1))) return true;
+            else return false;
         }
         return false;
     }

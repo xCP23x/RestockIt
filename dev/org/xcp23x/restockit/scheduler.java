@@ -29,15 +29,13 @@ public class scheduler {
                 String line2 = ((Sign)block.getState()).getLine(2);
                 String line3 = ((Sign)block.getState()).getLine(3);
                 
-                if(chestUtils.getCurrentItems(signUtils.getMaterial(line2), block) >= signUtils.getMaxItems(line3)) {
-                    scheduler.stopSchedule(block);
+                if(chestUtils.getCurrentItems(signUtils.getMaterial(line2), chest) >= signUtils.getMaxItems(line3)) {
                     return;
                 }
                 
                 //Add item to chest
                 ItemStack stack = new ItemStack(signUtils.getMaterial(line2), 1);
                 chestUtils.getInventory(chest).addItem(stack);
-                RestockIt.log.info("Add one item until full with " + signUtils.getMaxItems(line3) + " items");
             }
             
         },0,period));
@@ -45,10 +43,12 @@ public class scheduler {
     }
     
     public static void stopSchedule(Block block) {
-        int i = schedules.get(block); //Get bukkit task ID
-        if (i != 0) {  //If it's 0, it's not running
-            RestockIt.plugin.getServer().getScheduler().cancelTask(i); //Cancel task
-            schedules.remove(block); //Remove entry from HashMap
+        if(schedules.containsKey(block)){
+            int i = schedules.get(block); //Get bukkit task ID
+            if (i != 0) {  //If it's 0, it's not running
+                RestockIt.plugin.getServer().getScheduler().cancelTask(i); //Cancel task
+                schedules.remove(block); //Remove entry from HashMap
+            }
         }
     }
 }
