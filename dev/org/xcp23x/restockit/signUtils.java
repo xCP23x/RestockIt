@@ -97,8 +97,7 @@ public class signUtils {
     
     public static boolean isRIsign(String line){
         String str = line.toLowerCase();
-        if(str.contains("restockit") || str.contains("restock it") || str.contains("full chest") || str.contains("full dispenser")) return true;
-        else return false;
+        return (str.contains("restockit") || str.contains("restock it") || str.contains("full chest") || str.contains("full dispenser"));
     }
     
     public static void dropSign(Block sign) {

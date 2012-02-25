@@ -1,6 +1,5 @@
 //@author Chris Price (xCP23x)
 
-
 package org.xcp23x.restockit;
 
 import org.bukkit.Material;
@@ -64,16 +63,14 @@ public class chestUtils {
         int x = block.getX(), y = block.getY(), z = block.getZ();
         Block posSign = block.getWorld().getBlockAt(x, y-2, z);
         if ((block.getType() == Material.CHEST || block.getType() == Material.DISPENSER) && (posSign.getType() == Material.WALL_SIGN || posSign.getType() == Material.SIGN_POST)) {
-            if (signUtils.isRIsign(((Sign)posSign).getLine(1))) return true;
-            else return false;
+            return (signUtils.isRIsign(((Sign)posSign.getState()).getLine(1)));
         }
         
         //Check above the sign
         block = sign.getWorld().getBlockAt(sign.getX(), sign.getY()+1, sign.getZ());
         posSign = block.getWorld().getBlockAt(x, y+2, z);
         if ((block.getType() == Material.CHEST || block.getType() == Material.DISPENSER) && (posSign.getType() == Material.WALL_SIGN || posSign.getType() == Material.SIGN_POST)) {
-            if (signUtils.isRIsign(((Sign)posSign).getLine(1))) return true;
-            else return false;
+            return(signUtils.isRIsign(((Sign)posSign.getState()).getLine(1)));
         }
         return false;
     }
