@@ -9,16 +9,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-//Blank
-//RestockIt
-//Item:Damage
-//#stacks, ts
-//OR
-//#s, ts
-//OR
-//#, ts
-
-
 public class signUtils {
     
     public static Material getMaterial(String line){

@@ -4,9 +4,9 @@ package org.xcp23x.restockit;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.ContainerBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 public class chestUtils {
@@ -15,19 +15,18 @@ public class chestUtils {
         int items = 0;
         Inventory inv = getInventory(chest);
         int stacks = inv.getSize();
-        
         for(int x=0; x<stacks; x++) {
             ItemStack stack = inv.getItem(x);
+            if(stack == null) continue;
             if(stack.getType() == item) {
                 items = items + stack.getAmount();
             }
         }
-        
         return items;
     }
     
     public static Inventory getInventory(Block container){
-        return ((ContainerBlock)container.getState()).getInventory();
+        return ((InventoryHolder)container.getState()).getInventory();
     }
     
     public static boolean isSignAboveChest(Block chest) {
