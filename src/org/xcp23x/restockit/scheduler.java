@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class scheduler {
     
-    private static HashMap<Block, Integer> schedules = new HashMap<Block, Integer>();
+    private static HashMap<Block, Integer> schedules = new HashMap<Block, Integer>(); //This stores task IDs (int) with the blocks they are running on
     
     public static void startSchedule(final Block block, int period) {
         if (schedules.get(block) == null) schedules.put(block,0); //Prepare the HashMap if it's null
@@ -30,6 +30,7 @@ public class scheduler {
                 String line3 = ((Sign)block.getState()).getLine(3);
                 
                 if(chestUtils.getCurrentItems(signUtils.getMaterial(line2), chest) >= signUtils.getMaxItems(line3)) {
+                    //The chest has reached its limit
                     return;
                 }
                 

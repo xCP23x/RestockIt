@@ -1,4 +1,5 @@
 //@author Chris Price (xCP23x)
+//Nothing interesting here, just setting up listeners and announcing that it's started
 
 package org.xcp23x.restockit;
 

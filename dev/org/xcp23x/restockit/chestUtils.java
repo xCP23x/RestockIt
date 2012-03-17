@@ -4,49 +4,48 @@ package org.xcp23x.restockit;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.ContainerBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 public class chestUtils {
     
-    public static int getCurrentItems(Material item, Block chest) {
+    public static int getCurrentItems(Material item, Block chest) { //How many of item items are in chest chest?
         int items = 0;
         Inventory inv = getInventory(chest);
-        int stacks = inv.getSize();
-        
-        for(int x=0; x<stacks; x++) {
+        int stacks = inv.getSize(); //How many stacks?
+        for(int x=0; x<stacks; x++) {  //Check each stack
             ItemStack stack = inv.getItem(x);
+            if(stack == null) continue; //Continue to next stack
             if(stack.getType() == item) {
                 items = items + stack.getAmount();
             }
         }
-        
         return items;
     }
     
-    public static Inventory getInventory(Block container){
-        return ((ContainerBlock)container.getState()).getInventory();
+    public static Inventory getInventory(Block container){ //Returns the inventory of the InventoryHolder provided
+        return ((InventoryHolder)container.getState()).getInventory(); 
     }
     
     public static boolean isSignAboveChest(Block chest) {
-        if((chest.getType() == Material.CHEST) || (chest.getType() == Material.DISPENSER)) {
+        if((chest.getType() == Material.CHEST) || (chest.getType() == Material.DISPENSER)) {  //Is it a container?
             Block sign = signUtils.getSignAboveChest(chest);
-            if(sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) {
+            if(sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) { //Is there a sign above?
                 String line = ((Sign)sign.getState()).getLine(1);
-                if(signUtils.isRIsign(line)) return true;
+                if(signUtils.isRIsign(line)) return true;  //Is it a RestockIt sign?
             }
         }
         return false;
     }
     
     public static boolean isSignBelowChest(Block chest) {
-        if((chest.getType() == Material.CHEST) || (chest.getType() == Material.DISPENSER)) {
+        if((chest.getType() == Material.CHEST) || (chest.getType() == Material.DISPENSER)) { //Is is a container
             Block sign = signUtils.getSignBelowChest(chest);
-            if (sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) {
+            if (sign.getType() == Material.WALL_SIGN || sign.getType() == Material.SIGN_POST) { //Is there a sign below
                 String line = ((Sign)sign.getState()).getLine(1);
-                if(signUtils.isRIsign(line)) return true;
+                if(signUtils.isRIsign(line)) return true;  //Is it a RestockIt sign?
             }
         }
         return false;
@@ -61,14 +60,14 @@ public class chestUtils {
         //Check below the sign
         Block block = sign.getWorld().getBlockAt(sign.getX(), sign.getY()-1, sign.getZ());
         int x = sign.getX(), y = sign.getY(), z = sign.getZ();
-        Block posSign = block.getWorld().getBlockAt(x, y-2, z);
+        Block posSign = block.getWorld().getBlockAt(x, y-2, z); //Possibly a sign
         if ((block.getType() == Material.CHEST || block.getType() == Material.DISPENSER) && (posSign.getType() == Material.WALL_SIGN || posSign.getType() == Material.SIGN_POST)) {
             return (signUtils.isRIsign(((Sign)posSign.getState()).getLine(1)));
         }
         
         //Check above the sign
         block = sign.getWorld().getBlockAt(sign.getX(), sign.getY()+1, sign.getZ());
-        posSign = block.getWorld().getBlockAt(x, y+2, z);
+        posSign = block.getWorld().getBlockAt(x, y+2, z); //Possibly a sign
         if ((block.getType() == Material.CHEST || block.getType() == Material.DISPENSER) && (posSign.getType() == Material.WALL_SIGN || posSign.getType() == Material.SIGN_POST)) {
             return(signUtils.isRIsign(((Sign)posSign.getState()).getLine(1)));
         }
@@ -76,9 +75,11 @@ public class chestUtils {
     }
     
     public static Block getChestFromSign(Block sign) {
+        //Try chest below sign first
         Block chest = sign.getWorld().getBlockAt(sign.getX(), sign.getY() - 1, sign.getZ());
         if(chest.getType() == Material.CHEST || chest.getType() == Material.DISPENSER) return chest;
         
+        //Then chest above sign
         chest = sign.getWorld().getBlockAt(sign.getX(), sign.getY() + 1, sign.getZ());
         if(chest.getType() == Material.CHEST || chest.getType() == Material.DISPENSER) return chest;
         

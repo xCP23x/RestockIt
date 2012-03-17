@@ -10,6 +10,7 @@ import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class playerUtils {
+    //Colours for use in player messages:
     static ChatColor bCol = ChatColor.DARK_AQUA; //Bracket colour
     static ChatColor rCol = ChatColor.GRAY; // RestockIt colour
     static ChatColor eCol = ChatColor.DARK_RED; //Error colour
@@ -17,6 +18,7 @@ public class playerUtils {
     static ChatColor sCol = ChatColor.GOLD; //String colour
     
     public static void sendPlayerMessage(Player player, int number) {
+        //Give the error code here, so we only have to do it once
         player.sendMessage(bCol + "[" + rCol + "RestockIt" + bCol + "]" + eCol + " Error " + number + ":");
         switch(number){
             case 1:
@@ -32,6 +34,7 @@ public class playerUtils {
     }
     
     public static void sendPlayerMessage(Player player, int number, String string) {
+        //Give the error code here, so we only have to do it once
         player.sendMessage(bCol + "[" + rCol + "RestockIt" + bCol + "]" + eCol + " Error " + number + ":");
         switch(number){
             case 2:
@@ -54,11 +57,14 @@ public class playerUtils {
     
     public static boolean hasPermissions(Player player, Block container, String line) {
         
+        //If PermissionsEx is enabled, set it as the PermissionManager
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
-        String containerName = line.equalsIgnoreCase("incinerator") ? "incinerator" : container.getType().name().toLowerCase();
+        //Check if it's an incinerator
+        String containerName = signUtils.isIncinerator(line) ? "incinerator" : container.getType().name().toLowerCase();
         
-        if(pm == null) {
+        if(pm == null) { //If using SuperPerms:
             if(player.hasPermission("restockit." + containerName)) return true;
+        //If using PermissionsEx:
         } else if(pm.has(player, "restockit." + containerName, player.getWorld().getName())) return true;
         return false;
     }

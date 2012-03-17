@@ -12,15 +12,25 @@ import org.bukkit.inventory.ItemStack;
 public class signUtils {
     
     public static Material getMaterial(String line){
+        //Return material from line, else AIR
         return getType(line) > 0 ? Material.getMaterial(getType(line)) : Material.AIR;
     }
     
     public static short getDamage(String line) {
+        //Return damage from line, else 0
         String dmgStr = (line.indexOf(":") >= 0 ? line : line+":0").split(":")[1];
         return Short.parseShort(dmgStr);
     }
     
     public static int getType(String line) {
+        
+        //Returns:
+        //0 if it's an incinerator
+        //-1 if it's and int, but not an ID
+        //-2 if it's not an int or an ID
+        //-3 if there's a bad damage value
+        //Int ID of item if it's valid        
+        
         if (line.equalsIgnoreCase("Incinerator")) {
             return 0;
         }
@@ -46,6 +56,7 @@ public class signUtils {
 	return t.getId();
     }
     
+    //Currently Unused
     public static void setMaxItems(int items, Block block) {
         Sign sign = (Sign)block.getState();
         String part = sign.getLine(3).split(",")[1];
@@ -54,24 +65,26 @@ public class signUtils {
     }
     
     public static int getMaxItems(String line) {
-        String str = line.contains(",") ? line.split(",")[0].toLowerCase().replaceAll(" ", "") : null;
+        String str = line.contains(",") ? line.split(",")[0].toLowerCase().replaceAll(" ", "") : null; //Split the line, else give null
         if(str==null) return 0;
         
         try {
-            if(str.contains("i") || str.contains("items") || str.contains("item")) {
+            if(str.contains("i") || str.contains("items") || str.contains("item")) { //If they've specified a number of items
                 return Integer.parseInt(str.replaceAll("items", "").replaceAll("i", "").replaceAll("item", ""));
             }
             
-            if(str.contains("s") || str.contains("stacks") || str.contains("stack")) {
+            if(str.contains("s") || str.contains("stacks") || str.contains("stack")) {//If they've specified a number of stacks
                 return Integer.parseInt(str.replaceAll("stack", "").replaceAll("s", ""))*getMaterial(line).getMaxStackSize();
             }
             
+            //Assume they mean they want x amount of items
             return Integer.parseInt(str);
-        } catch(Exception ex){}
+        } catch(Exception ex){} //Catch anything that may have gone wrong
         
         return 0;
     }
     
+    //Currently Unused
     public static void setPeriod(float period, Block block) {
         Sign sign = (Sign)block.getState();
         String part1 = sign.getLine(3).split(",")[0];
@@ -81,32 +94,38 @@ public class signUtils {
     }
     
     public static int getPeriod(String line) {
+        //If they specify seconds, multiply by 20, if not, give the raw value
         String periodStr = line.contains(",") ? line.split(",")[1].replaceAll(" ", "") : "0";
         return periodStr.contains("s") ? Short.parseShort(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
     }
     
     public static boolean isRIsign(String line){
+        //Check if line 1 says it's a RestockIt sign.
         String str = line.toLowerCase();
         return (str.contains("restockit") || str.contains("restock it") || str.contains("full chest") || str.contains("full dispenser"));
     }
     
     public static void dropSign(Block sign) {
+        //Remove the sign and drop one at its location
         Location loc = sign.getWorld().getBlockAt(sign.getX(), sign.getY(), sign.getZ()).getLocation();
         sign.setType(Material.AIR);
         sign.getWorld().dropItem(loc, new ItemStack(Material.SIGN, 1));
     }
     
     public static boolean isDelayedSign(String line) {
+        //If max items AND the period aren't specified, it's not a delayed sign
         if(getMaxItems(line) == 0 || getPeriod(line) == 0) return false;
         return true;
     }
     
     public static boolean isIncinerator(String line) {
+        //Check if it's an incinerator
         if(line.toLowerCase().contains("incinerator")) return true;
         else return false;
     }
     
     public static Block getSignFromChest(Block chest) {
+        //Fairly simple, does what it says
         if(chestUtils.isSignAboveChest(chest)) return getSignAboveChest(chest);
         if(chestUtils.isSignBelowChest(chest)) return getSignBelowChest(chest);
         return null;
@@ -122,6 +141,7 @@ public class signUtils {
     
     public static boolean line2hasErrors(String line, Player player) {
         
+        //A frontend for getType(), this tells the player what's going on
         switch(getType(line)){
             case -3:
                 playerUtils.sendPlayerMessage(player, 5, line.split(":")[1]);
