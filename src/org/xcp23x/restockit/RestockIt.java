@@ -4,7 +4,6 @@
 package org.xcp23x.restockit;
 
 import java.util.logging.Logger;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RestockIt extends JavaPlugin {
@@ -16,13 +15,9 @@ public class RestockIt extends JavaPlugin {
     public void onEnable(){
         plugin = this;
         getServer().getPluginManager().registerEvents(new listeners(), this);
-        PluginDescriptionFile pdfFile = this.getDescription();
-        RestockIt.log.info("[RestockIt] v" + pdfFile.getVersion() + " Started");
     }
     
     @Override
     public void onDisable(){
-        PluginDescriptionFile pdfFile = this.getDescription();
-        RestockIt.log.info("[RestockIt] v" + pdfFile.getVersion() + " Stopped");
     }
 }

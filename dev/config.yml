@@ -1,0 +1,5 @@
+blacklist:
+  - BEDROCK
+  - TNT
+
+opsOverrideBlacklist: false

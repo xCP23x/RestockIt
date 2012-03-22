@@ -36,6 +36,8 @@ public class scheduler {
                 
                 //Add item to chest
                 ItemStack stack = new ItemStack(signUtils.getMaterial(line2), 1);
+                Short damage = signUtils.getDamage(line2);
+                if (damage >= 0) stack.setDurability(damage);
                 chestUtils.getInventory(chest).addItem(stack);
             }
             

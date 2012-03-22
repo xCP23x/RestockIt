@@ -2,6 +2,7 @@
 
 package org.xcp23x.restockit;
 
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -16,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
 public class listeners implements Listener {
+    
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK){ //If they right click...
@@ -60,7 +62,7 @@ public class listeners implements Listener {
                 return;
             }
             
-            if(!playerUtils.hasPermissions(player, chestUtils.getChestFromSign(sign), line2)){ //They don't have permission
+            if(!playerUtils.hasContainerPermissions(player, chestUtils.getChestFromSign(sign), line2)){ //They don't have permission
                 signUtils.dropSign(sign);
                 playerUtils.sendPlayerMessage(player, 2, chestUtils.getChestFromSign(sign).getType().name().toLowerCase());
                 return;
@@ -80,6 +82,19 @@ public class listeners implements Listener {
             if(signUtils.line2hasErrors(line2, player)) { //Errors were found (no need to tell the player, they've already been told)
                 signUtils.dropSign(sign);
                 return;
+            }
+            
+            //Check Blacklist
+            List<String> blacklist = RestockIt.plugin.getConfig().getStringList("blacklist");
+            int size = blacklist.size();
+            for(int x = 0; x<size; x++) {
+                String item = blacklist.get(x);
+                if(signUtils.getType(item) <= 0) {
+                    RestockIt.log.warning("[RestockIt] Error in blacklist: " + item + "not recognised - Ignoring");
+                } else if ((signUtils.getType(line2) == signUtils.getType(item)) && !playerUtils.hasBlacklistPermissions(player)){
+                    playerUtils.sendPlayerMessage(player, 7, signUtils.getMaterial(item).name());
+                    signUtils.dropSign(sign);
+                }
             }
             
             eventTriggered(chestUtils.getChestFromSign(sign), line2, line3, sign);

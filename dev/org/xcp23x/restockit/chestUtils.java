@@ -94,9 +94,9 @@ public class chestUtils {
             int stacks = inv.getSize();  //Get inventory size (chest size != dispenser)
             int stackSize = mat.getMaxStackSize(); //Get stack size (snowball stack != stone)
             ItemStack stack = new ItemStack(mat, stackSize); //Make the ItemStack
-            if(damage >= 0) {stack.setDurability(damage);} //Incorporate damage (remember, -1 = no damage value)
+            if(damage >= 0) stack.setDurability(damage); //Incorporate damage (remember, -1 = no damage value)
             
-            for(int x=0; x<stacks; x++) {inv.setItem(x, stack);}//Fill the chest
+            for(int x=0; x<stacks; x++) inv.setItem(x, stack);//Fill the chest
             
         } else {inv.clear();} //Clear inventory if air is requested (see, there WAS a reason for setting it as air)
     }
