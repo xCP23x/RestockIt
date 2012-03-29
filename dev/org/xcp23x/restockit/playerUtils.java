@@ -74,7 +74,6 @@ public class playerUtils {
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
         if(pm == null) { //If using SuperPerms:
             if(RestockIt.plugin.getConfig().getBoolean("opsOverrideBlacklist") && player.isOp() && "restockit.blacklist.bypass".equals(perm)) return true;
-            if(player.hasPermission(perm)) RestockIt.log.info("Player has " + perm);
             if(player.hasPermission(perm)) return true;
             
         //If using PermissionsEx:
