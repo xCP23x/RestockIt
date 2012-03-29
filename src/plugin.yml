@@ -1,14 +1,22 @@
 name: RestockIt
 main: org.xcp23x.restockit.RestockIt
-version: 1.6.1
+version: 1.7
 commands:
 permissions:
   restockit.*:
     description: Gives access to all RestockIt permisions
+    default: false
     children:
       restockit.chest: true
       restockit.dispenser: true
-      restockit.incierator: true
+      restockit.incinerator: true
+      restockit.blacklist.bypass: true
+  restockit.blacklist.*:
+    description: Gives access to all blacklist permisions
+    default: false
+    children:
+      restockit.blacklist.bypass: true
+      
   restockit.chest:
     description: Allows you to create a RestockIt chest
     default: op
@@ -18,3 +26,6 @@ permissions:
   restockit.incinerator:
     description: Allows you to create a RestockIt incinerator
     default: true
+  restockit.blacklist.bypass:
+    description: Allows you to bypass the blacklist
+    default: false

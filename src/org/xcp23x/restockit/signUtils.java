@@ -95,8 +95,11 @@ public class signUtils {
     
     public static int getPeriod(String line) {
         //If they specify seconds, multiply by 20, if not, give the raw value
-        String periodStr = line.contains(",") ? line.split(",")[1].replaceAll(" ", "") : "0";
-        return periodStr.contains("s") ? Short.parseShort(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
+        try {
+            String periodStr = line.contains(",") ? line.split(",")[1].replaceAll(" ", "") : "0";
+            return periodStr.contains("s") ? Short.parseShort(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
+        } catch(Exception ex){}
+        return 0;
     }
     
     public static boolean isRIsign(String line){
