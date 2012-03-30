@@ -1,6 +1,6 @@
 name: RestockIt
 main: org.xcp23x.restockit.RestockIt
-version: 1.7
+version: 1.7.1
 commands:
 permissions:
   restockit.*:

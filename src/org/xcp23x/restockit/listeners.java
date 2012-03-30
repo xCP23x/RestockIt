@@ -96,6 +96,7 @@ public class listeners implements Listener {
                 } else if ((signUtils.getType(line2) == signUtils.getType(item)) && !playerUtils.hasBlacklistPermissions(player)){
                     playerUtils.sendPlayerMessage(player, 7, signUtils.getMaterial(item).name());
                     signUtils.dropSign(sign);
+                    return;
                 }
             }
             
