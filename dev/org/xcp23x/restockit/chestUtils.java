@@ -5,6 +5,7 @@
 package org.xcp23x.restockit;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.Inventory;
@@ -88,18 +89,47 @@ public class chestUtils {
         return null;
     }
     
+    public static Block getDoubleChest(Block chest){
+        //Return true if there is a chest next to the one given
+        if(chest.getType() != Material.CHEST) return null;
+        int x = chest.getX(), y = chest.getY(), z = chest.getZ();
+        World world = chest.getWorld();
+        if(world.getBlockAt(x+1, y, z).getType() == Material.CHEST) return world.getBlockAt(x+1, y, z);
+        if(world.getBlockAt(x-1, y, z).getType() == Material.CHEST) return world.getBlockAt(x-1, y, z);
+        if(world.getBlockAt(x, y, z+1).getType() == Material.CHEST) return world.getBlockAt(x, y, z+1);
+        if(world.getBlockAt(x, y, z-1).getType() == Material.CHEST) return world.getBlockAt(x, y, z-1);
+        return null;
+    }
+    
     public static void fillChest(Block chest, String line){
         Material mat = signUtils.getMaterial(line);
         Inventory inv = getInventory(chest);
         Short damage = signUtils.getDamage(line);
+        
         if (mat != Material.AIR) { //Trying to fill a chest with air will crash the client (but not the server)
-            int stacks = inv.getSize();  //Get inventory size (chest size != dispenser)
+            Block dc = getDoubleChest(chest); //The other chest if it's a dpuble chest
+            
             int stackSize = mat.getMaxStackSize(); //Get stack size (snowball stack != stone)
             ItemStack stack = new ItemStack(mat, stackSize); //Make the ItemStack
             if(damage >= 0) stack.setDurability(damage); //Incorporate damage (remember, -1 = no damage value)
+            int stacks = dc!= null ? inv.getSize() / 2 : inv.getSize();  //Get inventory size
             
             for(int x=0; x<stacks; x++) inv.setItem(x, stack);//Fill the chest
             
-        } else {inv.clear();} //Clear inventory if air is requested (see, there WAS a reason for setting it as air)
+            if(getDoubleChest(chest)!=null) {
+                
+                if(chestUtils.isRIchest(dc)){
+                    //Prepare stuff for second chest if it's different
+                    Sign sign = (Sign)signUtils.getSignFromChest(dc).getState();
+                    line = sign.getLine(2);
+                    mat = signUtils.getMaterial(line);
+                    damage = signUtils.getDamage(line);
+                    stackSize = mat.getMaxStackSize();
+                    stack = new ItemStack(mat, stackSize);
+                }
+                for(int x=stacks;x<stacks*2; x++) inv.setItem(x, stack); //Fill the other half
+            }
+            
+        } else inv.clear(); //Clear inventory if air is requested (see, there WAS a reason for setting it as air)
     }
 }

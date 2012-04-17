@@ -30,6 +30,14 @@ public class listeners implements Listener {
                     String line2 = ((Sign)sign.getState()).getLine(2);
                     String line3 = ((Sign)sign.getState()).getLine(3);
                     eventTriggered(chest, line2, line3, sign); //Pass relevant lines to eventTriggered()
+                } else { //Check if it's a double chest
+                    Block dc = chestUtils.getDoubleChest(chest);
+                    if(dc != null){
+                        Block sign = signUtils.getSignFromChest(dc);
+                        String line2 = ((Sign)sign.getState()).getLine(2);
+                        String line3 = ((Sign)sign.getState()).getLine(3);
+                        eventTriggered(dc, line2, line3, sign);
+                    }
                 }
             }
         }
