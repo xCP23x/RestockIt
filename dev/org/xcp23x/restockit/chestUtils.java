@@ -90,7 +90,7 @@ public class chestUtils {
     }
     
     public static Block getDoubleChest(Block chest){
-        //Return true if there is a chest next to the one given
+        //Return chest if there is one next to the block given
         if(chest.getType() != Material.CHEST) return null;
         int x = chest.getX(), y = chest.getY(), z = chest.getZ();
         World world = chest.getWorld();
