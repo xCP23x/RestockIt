@@ -1,7 +1,8 @@
 name: RestockIt
 main: org.xcp23x.restockit.RestockIt
-version: 1.7.1
+version: 1.8
 commands:
+  
 permissions:
   restockit.*:
     description: Gives access to all RestockIt permisions
@@ -16,7 +17,6 @@ permissions:
     default: false
     children:
       restockit.blacklist.bypass: true
-      
   restockit.chest:
     description: Allows you to create a RestockIt chest
     default: op

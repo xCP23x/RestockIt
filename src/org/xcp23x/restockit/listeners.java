@@ -20,17 +20,26 @@ import org.bukkit.inventory.Inventory;
 
 public class listeners implements Listener {
     
+    private static Block getRestockItChest(Block chest){
+        //Return which chest has the sign (else null)
+        if(chest.getType() == Material.CHEST || chest.getType() == Material.DISPENSER) {
+            Block dc = chestUtils.getDoubleChest(chest);
+            
+            if(chestUtils.isRIchest(chest)) return chest;
+            else if(dc != null && chestUtils.isRIchest(dc)) return dc;
+        }
+        return null;
+    }
+    
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK){ //If they right click...
-            Block chest = event.getClickedBlock();
-            if(chest.getType() == Material.CHEST || chest.getType() == Material.DISPENSER) {  //And it's a chest or dispenser...
-                if(chestUtils.isRIchest(chest)) { //And it's a RestockIt chest...
-                    Block sign = signUtils.getSignFromChest(chest);
-                    String line2 = ((Sign)sign.getState()).getLine(2);
-                    String line3 = ((Sign)sign.getState()).getLine(3);
-                    eventTriggered(chest, line2, line3, sign); //Pass relevant lines to eventTriggered()
-                }
+            Block chest = getRestockItChest(event.getClickedBlock());
+            if(chest != null) {  //And it's a restockit chest...
+                Block sign = signUtils.getSignFromChest(chest);
+                String line2 = ((Sign)sign.getState()).getLine(2);
+                String line3 = ((Sign)sign.getState()).getLine(3);
+                eventTriggered(chest, line2, line3, sign); //Pass relevant lines to eventTriggered()
             }
         }
     }
@@ -127,28 +136,28 @@ public class listeners implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         Material mat = block.getType();
-        if(mat == Material.CHEST || mat == Material.DISPENSER) {
-            Block sign = signUtils.getSignFromChest(block);
-            if(sign == null) return;
-            String line = ((Sign)sign.getState()).getLine(1);
-            if(signUtils.isRIsign(line)) {
-                Inventory inv = chestUtils.getInventory(block); //Stops chests bursting everywhere when broken
-                inv.clear();
+        
+        if(getRestockItChest(block) != null ) { //Make sure it's a RestockIt chest
+            if(chestUtils.isRIchest(block)){ //Only remove the sign if we remove a main (non-auxiliary) chest
+                Block sign = signUtils.getSignFromChest(block);
                 scheduler.stopSchedule(sign); //Stop any schedules running for this block
+                signUtils.dropSign(sign); //Remove the sign
             }
-            signUtils.dropSign(sign); //Remove the sign
+            Inventory inv = chestUtils.getInventory(block);
+            inv.clear(); //Stops chests bursting everywhere when broken
         }
         else if(mat == Material.WALL_SIGN|| mat == Material.SIGN_POST) {
             Block sign = block;
             String line = ((Sign)sign.getState()).getLine(1);
+            
             if(signUtils.isRIsign(line)) {
                 Block chest = chestUtils.getChestFromSign(sign);
-                if(chest == null) return;
-                Inventory inv = chestUtils.getInventory(chest);
-                inv.clear(); //Empty the chest
-                scheduler.stopSchedule(block); //Stop any schedules for this block
+                if(chest != null){
+                    Inventory inv = chestUtils.getInventory(chest);
+                    inv.clear(); //Empty the chest
+                    scheduler.stopSchedule(sign); //Stop any schedules for this block
+                }
             }
         }
-        
     }
 }
