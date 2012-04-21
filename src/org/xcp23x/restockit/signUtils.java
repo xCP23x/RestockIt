@@ -11,7 +11,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class signUtils {
+class signUtils extends RestockIt {
     
     public static Material getMaterial(String line){
         //Return material from line, else AIR
@@ -125,8 +125,7 @@ public class signUtils {
     
     public static boolean isIncinerator(String line) {
         //Check if it's an incinerator
-        if(line.toLowerCase().contains("incinerator")) return true;
-        else return false;
+        return line.toLowerCase().contains("incinerator");
     }
     
     public static Block getSignFromChest(Block chest) {
