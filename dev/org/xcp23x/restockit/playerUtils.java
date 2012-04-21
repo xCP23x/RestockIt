@@ -58,31 +58,17 @@ class playerUtils extends RestockIt {
                 break;
             case 9:
                 player.sendMessage(dCol + "You do not have permission to destroy a RestockIt " + sCol + string);
+                break;
             default:
                 player.sendMessage(dCol + "Unspecified Error");
                 break;
         }
     }
     
-    /*
-    public static boolean hasBlacklistPermissions(Player player){
-        return hasPermissions(player, "restockit.blacklist.bypass");
-    }
-    
-    public static boolean hasContainerPermissions(Player player, Block container, String line, Boolean creating) {
-        //Check if it's an incinerator
-        String containerName = signUtils.isIncinerator(line) ? "incinerator" : container.getType().name().toLowerCase();
-        String perm = creating ? "restockit." + containerName + ".create" : "restockit." + containerName + ".open";
-        if (hasPermissions(player, perm)) return true;
-        return hasDeprecatedPermissions(player, "restockit." + containerName);
-    }
-     */
-    
     public static boolean hasPermissions(RIperm riperm){
         String perm = riperm.getPerm();
         String depperm = riperm.getDeprecatedPerm();
         Player player = riperm.getPlayer();
-        RestockIt.log.info("Perm checked: " + perm);
         
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
         //If using SuperPerms:

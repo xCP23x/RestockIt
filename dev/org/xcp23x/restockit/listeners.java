@@ -7,17 +7,15 @@ package org.xcp23x.restockit;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
 public class listeners implements Listener {
@@ -33,22 +31,11 @@ public class listeners implements Listener {
         return null;
     }
     
-    
-    /*
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK){ //If they right click...
-            Block chest = getRestockItChest(event.getClickedBlock());
-            if(chest != null) {  //And it's a restockit chest...
-                Block sign = signUtils.getSignFromChest(chest);
-                String line2 = ((Sign)sign.getState()).getLine(2);
-                String line3 = ((Sign)sign.getState()).getLine(3);
-                eventTriggered(chest, line2, line3, sign); //Pass relevant lines to eventTriggered()
-            }
-        }
+    private void eventTriggered(Block chest, String line2, String line3, Block sign){
+        if(signUtils.isDelayedSign(line3)){
+            scheduler.startSchedule(sign, signUtils.getPeriod(line3)); //If it's a delayed sign, start a schedule
+        } else chestUtils.fillChest(chest, line2); //If not, RestockIt.
     }
-     * 
-     */
     
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
@@ -138,12 +125,6 @@ public class listeners implements Listener {
         }
     }
     
-    private void eventTriggered(Block chest, String line2, String line3, Block sign){
-        if(signUtils.isDelayedSign(line3)){
-            scheduler.startSchedule(sign, signUtils.getPeriod(line3)); //If it's a delayed sign, start a schedule
-        } else chestUtils.fillChest(chest, line2); //If not, RestockIt.
-    }
-    
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
@@ -175,7 +156,7 @@ public class listeners implements Listener {
             if(signUtils.isRIsign(line)) {
                 Block chest = chestUtils.getChestFromSign(sign);
                 if(chest != null){
-                    RIperm perm = new RIperm(block, player, sign);
+                    RIperm perm = new RIperm(chest, player, sign);
                     perm.setDestroyed();
                     
                     if(!playerUtils.hasPermissions(perm)){
@@ -193,39 +174,18 @@ public class listeners implements Listener {
     }
     
     @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent event){
-        Inventory inv = event.getInventory();
-        InventoryType invType = inv.getType();
-        Player player = (Player)event.getPlayer();
-        
-        if(invType.equals(InventoryType.CHEST)){
-            Chest chest = (Chest)inv.getHolder();
-            Block block = chest.getBlock();
-            
-            if(getRestockItChest(block) != null) {
-                Block sign = signUtils.getSignFromChest(getRestockItChest(block));
+    public void onPlayerInteract(PlayerInteractEvent event){
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK){ //If they right click...
+            Block block = event.getClickedBlock();
+            Block chest = getRestockItChest(block);
+            if(chest != null) {  //And it's a restockit chest...
+                Player player = event.getPlayer();
                 
+                Block sign = signUtils.getSignFromChest(chest);
                 String line2 = ((Sign)sign.getState()).getLine(2);
                 String line3 = ((Sign)sign.getState()).getLine(3);
-                eventTriggered(getRestockItChest(block), line2, line3, sign);
                 
-                RIperm perm = new RIperm(block, player, sign);
-                perm.setOpened();
-                if(!playerUtils.hasPermissions(perm)){
-                    playerUtils.sendPlayerMessage(player, 8, perm.getBlockType());
-                    event.setCancelled(true);
-                }
-            }
-            
-        } else if(invType.equals(InventoryType.DISPENSER)){
-            Dispenser chest = (Dispenser)inv.getHolder();
-            Block block = chest.getBlock();
-            if(getRestockItChest(block) != null) {
-                Block sign = signUtils.getSignFromChest(getRestockItChest(block));
-                
-                String line2 = ((Sign)sign.getState()).getLine(2);
-                String line3 = ((Sign)sign.getState()).getLine(3);
-                eventTriggered(getRestockItChest(block), line2, line3, sign);
+                eventTriggered(chest, line2, line3, sign);
                 
                 RIperm perm = new RIperm(block, player, sign);
                 perm.setOpened();
