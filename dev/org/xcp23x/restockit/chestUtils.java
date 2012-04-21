@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-public class chestUtils {
+class chestUtils extends RestockIt {
     
     public static int getCurrentItems(Material item, Block chest) { //How many of item items are in chest chest?
         int items = 0;
@@ -55,8 +55,7 @@ public class chestUtils {
     }
     
     public static boolean isRIchest(Block chest) {
-        if(isSignBelowChest(chest) == false && isSignAboveChest(chest) == false) return false;
-        else return true;
+        return (isSignBelowChest(chest) || isSignAboveChest(chest));
     }
     
     public static boolean isAlreadyRIchest(Block sign) {

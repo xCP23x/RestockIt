@@ -6,12 +6,11 @@ package org.xcp23x.restockit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-public class playerUtils {
+class playerUtils extends RestockIt {
     //Colours for use in player messages:
     private static ChatColor bCol = ChatColor.DARK_AQUA; //Bracket colour
     private static ChatColor rCol = ChatColor.GRAY; // RestockIt colour
@@ -54,32 +53,62 @@ public class playerUtils {
             case 7:
                 player.sendMessage(dCol + "You do not have permission to use " + sCol + string);
                 break;
+            case 8:
+                player.sendMessage(dCol + "You do not have permission to open a RestockIt " + sCol + string);
+                break;
+            case 9:
+                player.sendMessage(dCol + "You do not have permission to destroy a RestockIt " + sCol + string);
             default:
                 player.sendMessage(dCol + "Unspecified Error");
                 break;
         }
     }
     
+    /*
     public static boolean hasBlacklistPermissions(Player player){
-        if(hasPermissions(player, "restockit.blacklist.bypass")) return true; else return false;
+        return hasPermissions(player, "restockit.blacklist.bypass");
     }
     
-    public static boolean hasContainerPermissions(Player player, Block container, String line) {
+    public static boolean hasContainerPermissions(Player player, Block container, String line, Boolean creating) {
         //Check if it's an incinerator
         String containerName = signUtils.isIncinerator(line) ? "incinerator" : container.getType().name().toLowerCase();
-        String perm = "restockit." + containerName;
-        if(hasPermissions(player, perm)) return true; else return false;
+        String perm = creating ? "restockit." + containerName + ".create" : "restockit." + containerName + ".open";
+        if (hasPermissions(player, perm)) return true;
+        return hasDeprecatedPermissions(player, "restockit." + containerName);
     }
+     */
     
-    private static boolean hasPermissions(Player player, String perm){
-        //If PermissionsEx is enabled, set it as the PermissionManager
+    public static boolean hasPermissions(RIperm riperm){
+        String perm = riperm.getPerm();
+        String depperm = riperm.getDeprecatedPerm();
+        Player player = riperm.getPlayer();
+        RestockIt.log.info("Perm checked: " + perm);
+        
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
-        if(pm == null) { //If using SuperPerms:
+        //If using SuperPerms:
+        if(pm == null) {
             if(RestockIt.plugin.getConfig().getBoolean("opsOverrideBlacklist") && player.isOp() && "restockit.blacklist.bypass".equals(perm)) return true;
             if(player.hasPermission(perm)) return true;
+            if(player.hasPermission(depperm)) {
+                warnDepPermissions(riperm);
+                return true;
+            }
             
         //If using PermissionsEx:
-        } else if(pm.has(player, perm, player.getWorld().getName())) return true;
+        } else{
+            if(pm.has(player, perm, player.getWorld().getName())) return true;
+            if(pm.has(player, depperm, player.getWorld().getName())) {
+                warnDepPermissions(riperm);
+                return true;
+            }
+        }
+        
         return false;
+    }
+    
+    private static void warnDepPermissions(RIperm riperm){
+        RestockIt.log.warning("[RestockIt] Using deprecated permission: " + riperm.getDeprecatedPerm());
+        RestockIt.log.info("[RestockIt] Use " + riperm.getPerm() + " instead");
+        RestockIt.log.info("[RestockIt] See http://dev.bukkit.org/server-mods/restockit/ for more info");
     }
 }

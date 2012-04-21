@@ -7,15 +7,17 @@ package org.xcp23x.restockit;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
 public class listeners implements Listener {
@@ -31,6 +33,8 @@ public class listeners implements Listener {
         return null;
     }
     
+    
+    /*
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK){ //If they right click...
@@ -43,6 +47,8 @@ public class listeners implements Listener {
             }
         }
     }
+     * 
+     */
     
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
@@ -50,6 +56,7 @@ public class listeners implements Listener {
         Player player = event.getPlayer();
         String[] lines = event.getLines();
         String line0 = lines[0], line1 = lines[1], line2 = lines[2], line3 = lines[3]; //Get the lines
+        Block block = chestUtils.getChestFromSign(sign);
         
         
         //If the player forgot the blank line, correct it for them
@@ -67,15 +74,18 @@ public class listeners implements Listener {
         
         if(signUtils.isRIsign(line1)){
             
-            if(chestUtils.getChestFromSign(sign) == null){ //There's no chest there
+            if(block == null){ //There's no chest there
                 signUtils.dropSign(sign);
                 playerUtils.sendPlayerMessage(player, 6);
                 return;
             }
             
-            if(!playerUtils.hasContainerPermissions(player, chestUtils.getChestFromSign(sign), line2)){ //They don't have permission
+            RIperm perm = new RIperm(block, player, line2);
+            perm.setCreated();
+            
+            if(!playerUtils.hasPermissions(perm)){ //They don't have permission
                 signUtils.dropSign(sign);
-                playerUtils.sendPlayerMessage(player, 2, chestUtils.getChestFromSign(sign).getType().name().toLowerCase());
+                playerUtils.sendPlayerMessage(player, 2, block.getType().name().toLowerCase());
                 return;
             }
             
@@ -86,7 +96,7 @@ public class listeners implements Listener {
             }
             
             if(signUtils.isIncinerator(line2)) { //It's an incinerator, we can go straight to eventTriggered()
-                eventTriggered(chestUtils.getChestFromSign(sign),line2,line3,sign);
+                eventTriggered(block,line2,line3,sign);
                 return;
             }
             
@@ -95,6 +105,8 @@ public class listeners implements Listener {
                 return;
             }
             
+            perm.setBlacklistBypass();
+            
             //Check Blacklist
             List<String> blacklist = RestockIt.plugin.getConfig().getStringList("blacklist");
             int size = blacklist.size();
@@ -102,14 +114,14 @@ public class listeners implements Listener {
                 String item = blacklist.get(x);
                 if(signUtils.getType(item) <= 0) {
                     RestockIt.log.warning("[RestockIt] Error in blacklist: " + item + "not recognised - Ignoring");
-                } else if ((signUtils.getType(line2) == signUtils.getType(item)) && !playerUtils.hasBlacklistPermissions(player)){
+                } else if ((signUtils.getType(line2) == signUtils.getType(item)) && !playerUtils.hasPermissions(perm)){
                     playerUtils.sendPlayerMessage(player, 7, signUtils.getMaterial(item).name());
                     signUtils.dropSign(sign);
                     return;
                 }
             }
             
-            eventTriggered(chestUtils.getChestFromSign(sign), line2, line3, sign);
+            eventTriggered(block, line2, line3, sign);
         }
     }
     
@@ -136,10 +148,20 @@ public class listeners implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         Material mat = block.getType();
+        Player player = event.getPlayer();
         
         if(getRestockItChest(block) != null ) { //Make sure it's a RestockIt chest
             if(chestUtils.isRIchest(block)){ //Only remove the sign if we remove a main (non-auxiliary) chest
                 Block sign = signUtils.getSignFromChest(block);
+                RIperm perm = new RIperm(block, player, sign);
+                perm.setDestroyed();
+                
+                if(!playerUtils.hasPermissions(perm)){
+                    playerUtils.sendPlayerMessage(player, 9, perm.getBlockType());
+                    event.setCancelled(true);
+                    return;
+                }
+                
                 scheduler.stopSchedule(sign); //Stop any schedules running for this block
                 signUtils.dropSign(sign); //Remove the sign
             }
@@ -153,9 +175,63 @@ public class listeners implements Listener {
             if(signUtils.isRIsign(line)) {
                 Block chest = chestUtils.getChestFromSign(sign);
                 if(chest != null){
+                    RIperm perm = new RIperm(block, player, sign);
+                    perm.setDestroyed();
+                    
+                    if(!playerUtils.hasPermissions(perm)){
+                        playerUtils.sendPlayerMessage(player, 9, perm.getBlockType());
+                        event.setCancelled(true);
+                        return;
+                    }
+                    
                     Inventory inv = chestUtils.getInventory(chest);
                     inv.clear(); //Empty the chest
                     scheduler.stopSchedule(sign); //Stop any schedules for this block
+                }
+            }
+        }
+    }
+    
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event){
+        Inventory inv = event.getInventory();
+        InventoryType invType = inv.getType();
+        Player player = (Player)event.getPlayer();
+        
+        if(invType.equals(InventoryType.CHEST)){
+            Chest chest = (Chest)inv.getHolder();
+            Block block = chest.getBlock();
+            
+            if(getRestockItChest(block) != null) {
+                Block sign = signUtils.getSignFromChest(getRestockItChest(block));
+                
+                String line2 = ((Sign)sign.getState()).getLine(2);
+                String line3 = ((Sign)sign.getState()).getLine(3);
+                eventTriggered(getRestockItChest(block), line2, line3, sign);
+                
+                RIperm perm = new RIperm(block, player, sign);
+                perm.setOpened();
+                if(!playerUtils.hasPermissions(perm)){
+                    playerUtils.sendPlayerMessage(player, 8, perm.getBlockType());
+                    event.setCancelled(true);
+                }
+            }
+            
+        } else if(invType.equals(InventoryType.DISPENSER)){
+            Dispenser chest = (Dispenser)inv.getHolder();
+            Block block = chest.getBlock();
+            if(getRestockItChest(block) != null) {
+                Block sign = signUtils.getSignFromChest(getRestockItChest(block));
+                
+                String line2 = ((Sign)sign.getState()).getLine(2);
+                String line3 = ((Sign)sign.getState()).getLine(3);
+                eventTriggered(getRestockItChest(block), line2, line3, sign);
+                
+                RIperm perm = new RIperm(block, player, sign);
+                perm.setOpened();
+                if(!playerUtils.hasPermissions(perm)){
+                    playerUtils.sendPlayerMessage(player, 8, perm.getBlockType());
+                    event.setCancelled(true);
                 }
             }
         }
