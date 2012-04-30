@@ -125,6 +125,7 @@ class chestUtils extends RestockIt {
                     damage = signUtils.getDamage(line);
                     stackSize = mat.getMaxStackSize();
                     stack = new ItemStack(mat, stackSize);
+                    if(damage >= 0) stack.setDurability(damage);
                 }
                 for(int x=stacks;x<stacks*2; x++) inv.setItem(x, stack); //Fill the other half
             }
