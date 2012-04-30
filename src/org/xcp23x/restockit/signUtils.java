@@ -99,7 +99,8 @@ class signUtils extends RestockIt {
         //If they specify seconds, multiply by 20, if not, give the raw value
         try {
             String periodStr = line.contains(",") ? line.split(",")[1].replaceAll(" ", "") : "0";
-            return periodStr.contains("s") ? Short.parseShort(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
+            int returnInt = periodStr.contains("s") ? (int)Double.parseDouble(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
+            if(returnInt>0) return returnInt;
         } catch(Exception ex){}
         return 0;
     }
