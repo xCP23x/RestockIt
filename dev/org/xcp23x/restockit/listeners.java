@@ -35,6 +35,11 @@ public class listeners implements Listener {
         if(signUtils.isDelayedSign(line3)){
             scheduler.startSchedule(sign, signUtils.getPeriod(line3)); //If it's a delayed sign, start a schedule
         } else chestUtils.fillChest(chest, line2); //If not, RestockIt.
+        
+        //New code for delayed double chests
+        Block dc = chestUtils.getDoubleChest(chest);
+        String dcline3 = (dc!=null && chestUtils.isRIchest(dc)) ? ((Sign)signUtils.getSignFromChest(dc).getState()).getLine(3) : null;
+        if(dcline3!=null && signUtils.isDelayedSign(dcline3)) scheduler.startSchedule(signUtils.getSignFromChest(dc), signUtils.getPeriod(dcline3));
     }
     
     @EventHandler
