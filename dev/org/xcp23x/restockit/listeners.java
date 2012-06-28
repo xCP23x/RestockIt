@@ -44,15 +44,19 @@ public class listeners implements Listener {
     
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
+        RestockIt.debug("Sign Changed");
         Block sign = event.getBlock();
         Player player = event.getPlayer();
         String[] lines = event.getLines();
         String line0 = lines[0], line1 = lines[1], line2 = lines[2], line3 = lines[3]; //Get the lines
+        RestockIt.debug("Line0: " + line0 + ", Line1: " + line1 + "Line2: " + line2 + ", Line3: " + line3);
+        
         Block block = chestUtils.getChestFromSign(sign);
         
         
         //If the player forgot the blank line, correct it for them
         if(signUtils.isRIsign(line0)) {
+            RestockIt.debug("Fixing missing blank line0");
             event.setLine(3, line2);
             event.setLine(2, line1);
             event.setLine(1, line0);
@@ -67,6 +71,7 @@ public class listeners implements Listener {
         if(signUtils.isRIsign(line1)){
             
             if(block == null){ //There's no chest there
+                RestockIt.debug("No chest by sign");
                 signUtils.dropSign(sign);
                 playerUtils.sendPlayerMessage(player, 6);
                 return;
@@ -82,12 +87,14 @@ public class listeners implements Listener {
             }
             
             if(chestUtils.isAlreadyRIchest(sign)) { //It's already a RestockIt chest
+                RestockIt.debug("It's already a RestockIt dispenser");
                 signUtils.dropSign(sign);
                 playerUtils.sendPlayerMessage(player, 1);
                 return;
             }
             
             if(signUtils.isIncinerator(line2)) { //It's an incinerator, we can go straight to eventTriggered()
+                RestockIt.debug("It's an incinerator");
                 eventTriggered(block,line2,line3,sign);
                 return;
             }
@@ -119,9 +126,12 @@ public class listeners implements Listener {
     
     @EventHandler
     public void onBlockDispense(BlockDispenseEvent event) { //For auto-refilling dispensers
+        RestockIt.debug("Block dispensed");
         Block block = event.getBlock();
         if(block.getType() == Material.DISPENSER) {   //Make sure the dispensable dispensee was dispensed by a dispenser
+            RestockIt.debug("... by a dispenser");
             if(chestUtils.isRIchest(block)) {
+                RestockIt.debug("It's a RestockIt container");
                 Block sign = signUtils.getSignFromChest(block);
                 String line2 = ((Sign)sign.getState()).getLine(2);
                 String line3 = ((Sign)sign.getState()).getLine(3);
@@ -137,6 +147,7 @@ public class listeners implements Listener {
         Player player = event.getPlayer();
         
         if(getRestockItChest(block) != null ) { //Make sure it's a RestockIt chest
+            RestockIt.debug("RestockIt chest broken");
             if(chestUtils.isRIchest(block)){ //Only remove the sign if we remove a main (non-auxiliary) chest
                 Block sign = signUtils.getSignFromChest(block);
                 RIperm perm = new RIperm(block, player, sign);
@@ -153,12 +164,14 @@ public class listeners implements Listener {
             }
             Inventory inv = chestUtils.getInventory(block);
             inv.clear(); //Stops chests bursting everywhere when broken
+            RestockIt.debug("Chest emptied");
         }
         else if(mat == Material.WALL_SIGN|| mat == Material.SIGN_POST) {
             Block sign = block;
             String line = ((Sign)sign.getState()).getLine(1);
             
             if(signUtils.isRIsign(line)) {
+                RestockIt.debug("RestockIt sign broken");
                 Block chest = chestUtils.getChestFromSign(sign);
                 if(chest != null){
                     RIperm perm = new RIperm(chest, player, sign);
@@ -172,6 +185,7 @@ public class listeners implements Listener {
                     
                     Inventory inv = chestUtils.getInventory(chest);
                     inv.clear(); //Empty the chest
+                    RestockIt.debug("Chest emptied");
                     scheduler.stopSchedule(sign); //Stop any schedules for this block
                 }
             }
@@ -184,6 +198,7 @@ public class listeners implements Listener {
             Block block = event.getClickedBlock();
             Block chest = getRestockItChest(block);
             if(chest != null) {  //And it's a restockit chest...
+                RestockIt.debug("RestockIt container opened");
                 Player player = event.getPlayer();
                 
                 Block sign = signUtils.getSignFromChest(chest);

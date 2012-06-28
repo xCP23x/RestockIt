@@ -19,6 +19,7 @@ class playerUtils extends RestockIt {
     private static ChatColor sCol = ChatColor.GOLD; //String colour
     
     public static void sendPlayerMessage(Player player, int number) {
+        RestockIt.debug(player.getName() + " sent error message " + number);
         //Give the error code here, so we only have to do it once
         player.sendMessage(bCol + "[" + rCol + "RestockIt" + bCol + "]" + eCol + " Error " + number + ":");
         switch(number){
@@ -35,6 +36,7 @@ class playerUtils extends RestockIt {
     }
     
     public static void sendPlayerMessage(Player player, int number, String string) {
+        RestockIt.debug(player.getName() + " sent error message " + number + " with data: " + string);
         //Give the error code here, so we only have to do it once
         player.sendMessage(bCol + "[" + rCol + "RestockIt" + bCol + "]" + eCol + " Error " + number + ":");
         switch(number){
@@ -73,6 +75,7 @@ class playerUtils extends RestockIt {
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
         //If using SuperPerms:
         if(pm == null) {
+            RestockIt.debug(("Using SuperPerms"));
             if(RestockIt.plugin.getConfig().getBoolean("opsOverrideBlacklist") && player.isOp() && "restockit.blacklist.bypass".equals(perm)) return true;
             if(player.hasPermission(perm)) return true;
             if(player.hasPermission(depperm)) {
@@ -82,6 +85,7 @@ class playerUtils extends RestockIt {
             
         //If using PermissionsEx:
         } else{
+            RestockIt.debug("Using PermissionsEx");
             if(pm.has(player, perm, player.getWorld().getName())) return true;
             if(pm.has(player, depperm, player.getWorld().getName())) {
                 warnDepPermissions(riperm);

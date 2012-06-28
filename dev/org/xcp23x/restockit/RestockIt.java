@@ -12,6 +12,8 @@ public class RestockIt extends JavaPlugin {
     
     static final Logger log = Logger.getLogger("Minecraft");
     public static RestockIt plugin;
+    static boolean debugEnabled = false;
+    static boolean schedDebugEnabled = false;
     
     @Override
     public void onEnable(){
@@ -21,18 +23,34 @@ public class RestockIt extends JavaPlugin {
         //Prepare the config
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
+        debugEnabled = this.getConfig().getBoolean("debugMessages");
+        schedDebugEnabled = this.getConfig().getBoolean("MOARdebug");
+        if(debugEnabled) log.info("[RestockIt] Basic debug messages enabled");
+        if(schedDebugEnabled) log.info("[RestockIt] Scheduler debug messages enabled");
         
         //Check config for errors
         List<String> blacklist = plugin.getConfig().getStringList("blacklist");
         int size = blacklist.size();
         for(int x = 0; x<size; x++) {
             if(signUtils.getType(blacklist.get(x)) < 0) {
-                RestockIt.log.warning("[RestockIt] Error in blacklist: " + blacklist.get(x) + "not recognised - Ignoring");
+                RestockIt.log.warning("[RestockIt] Error in blacklist: " + blacklist.get(x) + " not recognised - Ignoring");
             }
         }
     }
     
     @Override
     public void onDisable(){
+    }
+    
+    public static void debug(String msg){
+        if(debugEnabled == true){
+            RestockIt.log.info("[RestockIt][DEBUG]: "+msg);
+        }
+    }
+    
+    public static void debugSched(String msg){
+        if(schedDebugEnabled == true){
+            RestockIt.log.info("[RestockIt][SCHEDULER-DEBUG]: " +msg);
+        }
     }
 }

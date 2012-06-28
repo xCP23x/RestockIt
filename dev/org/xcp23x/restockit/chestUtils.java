@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 class chestUtils extends RestockIt {
     
-    public static int getCurrentItems(Material item, Block chest) { //How many of item items are in chest chest?
+    public static int getCurrentItems(Material item, Block chest) { //How many of item items are in chest?
         int items = 0;
         Inventory inv = getInventory(chest);
         int stacks = inv.getSize(); //How many stacks?
