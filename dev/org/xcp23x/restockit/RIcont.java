@@ -14,9 +14,10 @@ class RIcont {
     //Class for RestockIt containers
     
     private Block block;
-    private RIsign sign;
     private InventoryHolder ivh;
-    private boolean isRI = false;
+    private Material item;
+    private int maxItems;
+    private int fillRate;
     
     public RIcont(Block cont){
         block = cont;

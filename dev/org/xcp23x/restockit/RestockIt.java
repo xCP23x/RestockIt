@@ -4,8 +4,13 @@
 
 package org.xcp23x.restockit;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RestockIt extends JavaPlugin {
@@ -14,6 +19,10 @@ public class RestockIt extends JavaPlugin {
     public static RestockIt plugin;
     static boolean debugEnabled = false;
     static boolean schedDebugEnabled = false;
+    
+    //Prepare config for delayed chests and command chests
+    private FileConfiguration chests = null;
+    private File chestsFile = null;
     
     @Override
     public void onEnable(){
@@ -40,6 +49,34 @@ public class RestockIt extends JavaPlugin {
     
     @Override
     public void onDisable(){
+        //Save any delayed or command chests
+        this.saveChests();
+    }
+    
+    public void loadChests(){
+        //If it's not been loaded, load it
+        if(chestsFile == null){
+            chestsFile = new File(getDataFolder(), "chests.yml");
+        }
+        chests = YamlConfiguration.loadConfiguration(chestsFile);
+    }
+    
+    public FileConfiguration getChests(){
+        if(chests == null){
+            this.loadChests();
+        }
+        return chests;
+    }
+    
+    public void saveChests(){
+        if(chests == null || chestsFile == null){
+            return;
+        }
+        try{
+            getChests().save(chestsFile);
+        } catch (IOException ex){
+            RestockIt.log.severe("[RestockIt] Could not save chest data");
+        }
     }
     
     public static void debug(String msg){
