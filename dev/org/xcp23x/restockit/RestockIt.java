@@ -17,8 +17,8 @@ public class RestockIt extends JavaPlugin {
     
     static final Logger log = Logger.getLogger("Minecraft");
     public static RestockIt plugin;
-    static boolean debugEnabled = false;
-    static boolean schedDebugEnabled = false;
+    private static boolean debugEnabled = false;
+    private static boolean schedDebugEnabled = false;
     
     //Prepare config for delayed chests and command chests
     private FileConfiguration chests = null;

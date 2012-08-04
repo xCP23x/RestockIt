@@ -11,22 +11,55 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 class RIcont {
-    //Class for RestockIt containers
+    //Class for RestockIt containers (any references to cont mean container)
     
-    private Block block;
+    private Block cont;
     private InventoryHolder ivh;
     private Material item;
     private int maxItems;
     private int fillRate;
+    private Boolean isRIcont = false;
     
-    public RIcont(Block cont){
-        block = cont;
-        //do stuff
+    public RIcont(Block block){
+        if(block == null){
+            RestockIt.debug("RIcont received null block on init");
+            return;
+        }
+        //Make sure it's a RestockIt cont
+        cont = block;
+        if(isRIcont()){
+            ivh = (InventoryHolder)cont.getState();
+            
+            
+            //More stuff
+        }
         
     }
     
-    public Block getSign(){
+    public Boolean isRIcont(){
+        if(cont.getType() == Material.CHEST || cont.getType() == Material.DISPENSER){
+            RIsign sign = getRIsign();
+            //If it's a RestockIt sign, it must be a RI cont
+            if(sign != null && sign.isRIsign()) return true;
+            
+            //TODO: Code for loading data from saved chests
+            
+        }
         
+        
+        return false;
+    }
+    
+    public RIsign getRIsign(){
+        //Check above cont
+        Block block = cont.getWorld().getBlockAt(cont.getX(), cont.getY() +1, cont.getZ());
+        RIsign sign = new RIsign(block);
+        if(sign.isRIsign()) return sign;
+        
+        //Check below cont
+        block = cont.getWorld().getBlockAt(cont.getX(), cont.getY() -1, cont.getZ());
+        sign = new RIsign(block);
+        if(sign.isRIsign()) return sign;
         
         return null;
     }
@@ -55,7 +88,6 @@ class RIcont {
             }
         }
         return items;
-        
     }
 
 }

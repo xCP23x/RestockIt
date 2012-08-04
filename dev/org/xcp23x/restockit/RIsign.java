@@ -8,8 +8,17 @@ import org.bukkit.block.Block;
 
 class RIsign {
     //Class for RestockIt signs
-    private RIcont cont;
-    private Block block;
+    private Block sign;
+    
+    public RIsign(Block block) {
+        sign = block;
+        //Do stuff
+    }
+    
+    public Boolean isRIsign(){
+        
+        return false;
+    }
     
     
 }
