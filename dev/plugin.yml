@@ -71,6 +71,7 @@ permissions:
     default: true
   restockit.incinerator.destroy:
     description: Allows you to destroy a RestockIt incinerator
+    default: true
     
   restockit.blacklist.bypass:
     description: Allows you to bypass the blacklist

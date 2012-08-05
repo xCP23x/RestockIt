@@ -18,22 +18,15 @@ class RIcont {
     private Material item;
     private int maxItems;
     private int fillRate;
-    private Boolean isRIcont = false;
     
     public RIcont(Block block){
         if(block == null){
             RestockIt.debug("RIcont received null block on init");
             return;
         }
-        //Make sure it's a RestockIt cont
         cont = block;
-        if(isRIcont()){
-            ivh = (InventoryHolder)cont.getState();
-            
-            
-            //More stuff
-        }
-        
+        //Make it automatically check if it's a restockit chest, if it is, get details  (ivh, item, maxItems, etc)
+        //If it's not, fail silently, maybe set a bool value to false
     }
     
     public Boolean isRIcont(){
@@ -45,8 +38,6 @@ class RIcont {
             //TODO: Code for loading data from saved chests
             
         }
-        
-        
         return false;
     }
     

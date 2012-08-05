@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 class RIperm {
     
     private Boolean isCreated=false, isOpened=false, isDestroyed=false, isBlacklistBypass=false;
-    private Block block=null;
-    private String line=null;
-    private Player player=null;
+    private Block block;
+    private String line;
+    private Player player;
     
     public RIperm(Block bl, Player pl, String ln){
         block = bl;
