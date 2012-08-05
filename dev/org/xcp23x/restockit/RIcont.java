@@ -5,6 +5,7 @@
 package org.xcp23x.restockit;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -16,29 +17,71 @@ class RIcont {
     private Block cont;
     private InventoryHolder ivh;
     private Material item;
-    private int maxItems;
-    private int fillRate;
+    private int maxItems,fillRate,x,y,z,damage;
     
     public RIcont(Block block){
-        if(block == null){
-            RestockIt.debug("RIcont received null block on init");
-            return;
-        }
-        cont = block;
-        //Make it automatically check if it's a restockit chest, if it is, get details  (ivh, item, maxItems, etc)
-        //If it's not, fail silently, maybe set a bool value to false
+        //Make sure it's a chest or dispenser
+        if(block != null && (block.getType() == Material.CHEST || block.getType() == Material.DISPENSER)){
+            //Set things we can set at the moment
+            cont = block;
+            ivh = (InventoryHolder)cont.getState();
+            x = cont.getX(); y = cont.getY(); z = cont.getZ();
+            if(isRIcont()){
+                //Set things related to restockit conts
+                maxItems = (getMaxItems() == 0) ? null : getMaxItems();
+                fillRate = (getFillRate() == 0) ? null : getFillRate();
+                item = getItem();
+            }
+            
+            
+        } else RestockIt.debug("Null or non-container block given to RIcont");
     }
     
     public Boolean isRIcont(){
+        if(cont == null) return false;
         if(cont.getType() == Material.CHEST || cont.getType() == Material.DISPENSER){
             RIsign sign = getRIsign();
-            //If it's a RestockIt sign, it must be a RI cont
+            //If it's a RestockIt sign, it must be a RI cont (if it's not, it could be a saved cont)
             if(sign != null && sign.isRIsign()) return true;
             
             //TODO: Code for loading data from saved chests
             
+            
+            
         }
         return false;
+    }
+    
+    public int getMaxItems(){
+        //Get max items from sign or from saved data
+        return 0;
+    }
+    
+    public void setMaxItems(int items){
+        //Set max items to sign or saved data
+    }
+    
+    public int getFillRate(){
+        //Get fill rate from sign or from saved data
+        return 0;
+    }
+    
+    public void setFillRate(int rate){
+        //Set fill rate to sign or saved data
+    }
+    
+    public Material getItem(){
+        //Get item from sign or from saved data
+        return null;
+    }
+    
+    public void setItem(Material mat){
+        //Set item to sign or saved data
+    }
+    
+    public int getDamage(){
+        //Get damage value from sign or from saved data
+        return 0;
     }
     
     public RIsign getRIsign(){
@@ -56,18 +99,21 @@ class RIcont {
     }
     
     public Block getDoubleChest(){
-        
-        
+        if(cont.getType() != Material.CHEST) return null;
+        int x = cont.getX(), y = cont.getY(), z = cont.getZ();
+        World world = cont.getWorld();
+        if(world.getBlockAt(x+1, y, z).getType() == Material.CHEST) return world.getBlockAt(x+1, y, z);
+        if(world.getBlockAt(x-1, y, z).getType() == Material.CHEST) return world.getBlockAt(x-1, y, z);
+        if(world.getBlockAt(x, y, z+1).getType() == Material.CHEST) return world.getBlockAt(x, y, z+1);
+        if(world.getBlockAt(x, y, z-1).getType() == Material.CHEST) return world.getBlockAt(x, y, z-1);
         return null;
     }
     
     public Boolean isDoubleChest(){
-        
-        
-        return false;
+        return (getDoubleChest() != null);
     }
     
-    public int getCurrentAmount(Material item){
+    public int getCurrentCount(Material item){
         int items = 0;
         Inventory inv = ivh.getInventory();
         int stacks = inv.getSize(); //How many stacks?
