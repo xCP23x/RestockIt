@@ -6,7 +6,7 @@ package org.xcp23x.restockit;
 
 import org.bukkit.block.Block;
 
-class RIsign {
+class RIsign extends RestockIt {
     //Class for RestockIt signs
     private Block sign;
     

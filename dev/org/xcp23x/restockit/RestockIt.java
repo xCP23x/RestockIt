@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,8 +22,8 @@ public class RestockIt extends JavaPlugin {
     private static boolean schedDebugEnabled = false;
     
     //Prepare config for delayed chests and command chests
-    private FileConfiguration chests = null;
-    private File chestsFile = null;
+    private static FileConfiguration chests = null;
+    private static File chestsFile = null;
     
     @Override
     public void onEnable(){
@@ -53,6 +54,44 @@ public class RestockIt extends JavaPlugin {
         this.saveChests();
     }
     
+    public String getChestProps(Block chest){
+        if(chests == null) loadChests();
+        String props = null;
+        try{
+            List<String> strl = chests.getStringList("containers");
+            for(int x = 0; x<strl.size(); x++){
+                String str = strl.get(x);
+                String xcoord = str.split(";")[0];
+                String ycoord = str.split(";")[1];
+                String zcoord = str.split(";")[2];
+                if(xcoord.equals(chest.getX()) && ycoord.equals(chest.getY()) && zcoord.equals(chest.getZ())){
+                    props = str;
+                }
+            }
+        } catch (Exception ex){};
+        return props;
+    }
+    
+    public void setChestProps(Block chest, String props){
+        if(chests == null) loadChests();
+        List<String> strl = chests.getStringList("containers");
+        Boolean isInStrl = false;
+        
+        for(int x = 0; x<strl.size(); x++){
+            String str = strl.get(x);
+            String xcoord = str.split(";")[0];
+            String ycoord = str.split(";")[1];
+            String zcoord = str.split(";")[2];
+            if(xcoord.equals(chest.getX()) && ycoord.equals(chest.getY()) && zcoord.equals(chest.getZ())){
+                isInStrl = true;
+                strl.remove(x);
+                strl.add(props);
+            }
+        }
+        
+        if(!isInStrl) strl.add(props);
+    }
+    
     public void loadChests(){
         //If it's not been loaded, load it
         if(chestsFile == null){
@@ -61,7 +100,7 @@ public class RestockIt extends JavaPlugin {
         chests = YamlConfiguration.loadConfiguration(chestsFile);
     }
     
-    public FileConfiguration getChests(){
+    public FileConfiguration getChestConfig(){
         if(chests == null){
             this.loadChests();
         }
@@ -73,7 +112,7 @@ public class RestockIt extends JavaPlugin {
             return;
         }
         try{
-            getChests().save(chestsFile);
+            getChestConfig().save(chestsFile);
         } catch (IOException ex){
             RestockIt.log.severe("[RestockIt] Could not save chest data");
         }

@@ -11,13 +11,16 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-class RIcont {
+class RIcont extends RestockIt {
     //Class for RestockIt containers (any references to cont mean container)
     
     private Block cont;
     private InventoryHolder ivh;
     private Material item;
-    private int maxItems,fillRate,x,y,z,damage;
+    private int maxItems,fillRate,x,y,z;
+    private short damage;
+    private boolean isSigned = false, isDelayed = false, isSaved = false;
+    private String contProps;
     
     public RIcont(Block block){
         //Make sure it's a chest or dispenser
@@ -28,26 +31,30 @@ class RIcont {
             x = cont.getX(); y = cont.getY(); z = cont.getZ();
             if(isRIcont()){
                 //Set things related to restockit conts
-                maxItems = (getMaxItems() == 0) ? null : getMaxItems();
-                fillRate = (getFillRate() == 0) ? null : getFillRate();
+                maxItems = getMaxItems();
+                fillRate = getFillRate();
                 item = getItem();
+                damage = getDamage();
             }
             
             
         } else RestockIt.debug("Null or non-container block given to RIcont");
     }
     
-    public Boolean isRIcont(){
+    public boolean isRIcont(){
         if(cont == null) return false;
         if(cont.getType() == Material.CHEST || cont.getType() == Material.DISPENSER){
             RIsign sign = getRIsign();
             //If it's a RestockIt sign, it must be a RI cont (if it's not, it could be a saved cont)
             if(sign != null && sign.isRIsign()) return true;
             
-            //TODO: Code for loading data from saved chests
+            //Syntax for chests: x,y,z;isDelayed(bool);itemIfNotDelayed;damageIfNotDelayed;(For delayed stuff:)item1,fillrate1,maxitems1-item2......
             
-            
-            
+            String props = getChestProps(cont);
+            if(props != null){
+                contProps = props;
+                return true;
+            }
         }
         return false;
     }
@@ -79,9 +86,13 @@ class RIcont {
         //Set item to sign or saved data
     }
     
-    public int getDamage(){
+    public short getDamage(){
         //Get damage value from sign or from saved data
         return 0;
+    }
+    
+    public void setDamage(short dmg){
+        
     }
     
     public RIsign getRIsign(){
@@ -98,7 +109,7 @@ class RIcont {
         return null;
     }
     
-    public Block getDoubleChest(){
+    public Block getDouble(){
         if(cont.getType() != Material.CHEST) return null;
         int x = cont.getX(), y = cont.getY(), z = cont.getZ();
         World world = cont.getWorld();
@@ -109,8 +120,8 @@ class RIcont {
         return null;
     }
     
-    public Boolean isDoubleChest(){
-        return (getDoubleChest() != null);
+    public boolean isDouble(){
+        return (getDouble() != null);
     }
     
     public int getCurrentCount(Material item){
@@ -125,6 +136,13 @@ class RIcont {
             }
         }
         return items;
+    }
+    
+    public boolean isSignedCont(){
+        //Work out if it's using a sign or saved command
+        RIsign sign = new RIsign();
+        if(sign != null && sign.isRIsign()) return true;
+        return false;
     }
 
 }
