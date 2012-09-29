@@ -2,7 +2,7 @@
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
-package org.xcp23x.restockit;
+package org.cp23.restockit;
 
 import java.util.HashMap;
 import org.bukkit.Material;
@@ -10,7 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
 
-class scheduler extends RestockIt {
+class Scheduler extends RestockIt {
     
     private static HashMap<Block, Integer> schedules = new HashMap<Block, Integer>(); //This stores task IDs (int) with the blocks they are running on
     
@@ -24,7 +24,7 @@ class scheduler extends RestockIt {
                 public void run() {
                     //If no sign is there, stop (the player may have removed it mid-count)
                     if (block.getType() != Material.WALL_SIGN && block.getType() != Material.SIGN_POST) {
-                        scheduler.stopSchedule(block);
+                        Scheduler.stopSchedule(block);
                         RestockIt.debugSched("Sign removed, cancelling schedule at " + getCoords(block));
                         return;
                     }

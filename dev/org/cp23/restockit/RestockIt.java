@@ -2,7 +2,7 @@
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
-package org.xcp23x.restockit;
+package org.cp23.restockit;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class RestockIt extends JavaPlugin {
     @Override
     public void onEnable(){
         plugin = this;
-        getServer().getPluginManager().registerEvents(new listeners(), this);
+        getServer().getPluginManager().registerEvents(new Listeners(), this);
         
         //Prepare the config
         this.getConfig().options().copyDefaults(true);
@@ -90,6 +90,23 @@ public class RestockIt extends JavaPlugin {
         }
         
         if(!isInStrl) strl.add(props);
+        chests.set("containers", strl);
+    }
+    
+    public void deleteChestProps(Block chest){
+        if(chests == null) loadChests();
+        List<String> strl = chests.getStringList("containers");
+        
+        for(int x = 0; x<strl.size(); x++){
+            String str = strl.get(x);
+            String xcoord = str.split(";")[0];
+            String ycoord = str.split(";")[1];
+            String zcoord = str.split(";")[2];
+            if(xcoord.equals(chest.getX()) && ycoord.equals(chest.getY()) && zcoord.equals(chest.getZ())){
+                strl.remove(x);
+                chests.set("containers", strl);
+            }
+        }
     }
     
     public void loadChests(){
@@ -100,7 +117,7 @@ public class RestockIt extends JavaPlugin {
         chests = YamlConfiguration.loadConfiguration(chestsFile);
     }
     
-    public FileConfiguration getChestConfig(){
+    private FileConfiguration getChestConfig(){
         if(chests == null){
             this.loadChests();
         }
@@ -118,13 +135,13 @@ public class RestockIt extends JavaPlugin {
         }
     }
     
-    public static void debug(String msg){
+    public void debug(String msg){
         if(debugEnabled == true){
             RestockIt.log.info("[RestockIt][DEBUG]: "+msg);
         }
     }
     
-    public static void debugSched(String msg){
+    public void debugSched(String msg){
         if(schedDebugEnabled == true){
             RestockIt.log.info("[RestockIt][SCHEDULER-DEBUG]: " +msg);
         }

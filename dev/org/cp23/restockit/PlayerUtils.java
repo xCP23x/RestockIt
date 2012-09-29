@@ -2,7 +2,7 @@
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
-package org.xcp23x.restockit;
+package org.cp23.restockit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-class playerUtils extends RestockIt {
+class PlayerUtils extends RestockIt {
     //Colours for use in player messages:
     private static ChatColor bCol = ChatColor.DARK_AQUA; //Bracket colour
     private static ChatColor rCol = ChatColor.GRAY; // RestockIt colour

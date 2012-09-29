@@ -2,13 +2,11 @@
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
-package org.xcp23x.restockit;
+package org.cp23.restockit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -18,7 +16,7 @@ public class ContProp extends RestockIt {
     private Boolean isScheduled;
     private Material itemNotScheduled;
     private Short damageNotScheduled;
-    private HashMap<Material, String> scheduledItems = new HashMap<Material, String>(); //String = fillrate1/maxitems1
+    private HashMap<String, String> scheduledItems = new HashMap<String, String>(); //First string is material/damage, second is other details.
     
     
     public ContProp (Block block){
@@ -26,7 +24,61 @@ public class ContProp extends RestockIt {
         loadProps();
     }
     
-    public void loadProps(){
+    public Boolean isScheduled(){
+        return isScheduled;
+    }
+    
+    public Material getItemNotScheduled(){
+        return itemNotScheduled;
+    }
+    
+    public Short getDamageNotScheduled(){
+        return damageNotScheduled;
+    }
+    
+    public Block getBlock(){
+        return cont;
+    }
+    
+    //Add some way to return schedules
+    
+    
+    public void setNotScheduled(Material item, Short damage){
+        isScheduled = false;
+        itemNotScheduled = item;
+        damageNotScheduled = damage;
+        saveProps();
+    }
+    
+    public void addScheduled(Material item, Short damage, int fillrate, int maxitems, int currentitems){
+        isScheduled = true;
+        itemNotScheduled = null;
+        damageNotScheduled = null;
+        
+        if(getSchedule(item, damage) != null){
+            //A schedule already exists for this item/damage, so remove it
+            scheduledItems.remove(item + "/" + damage);
+        }
+        //Make a new schedule
+        scheduledItems.put(item + "/" + damage, fillrate + "/" + maxitems + "/" + currentitems);
+        saveProps();
+    }
+    
+    public void removeScheduled(Material item, Short damage){
+        if(getSchedule(item, damage) != null){
+            //A schedule already exists for this item/damage, so remove it
+            scheduledItems.remove(item + "/" + damage);
+        }
+        saveProps();
+    }
+    
+    public void removeAll(Material item, Short damage){
+        if(getChestProps(cont) != null){
+            deleteChestProps(cont);
+        }
+    }
+    
+    private void loadProps(){
         
         //Syntax for chests: x;y;z;isScheduled(bool);itemNotScheduled;damageNotScheduled;-item1,fillrate1,maxitems1,currentitems1,damage1,-item2......
         
@@ -50,35 +102,57 @@ public class ContProp extends RestockIt {
                     String currentitems = str.split(",")[3];
                     String damage = str.split(",")[4];
                     
-                    scheduledItems.put(mat, fillrate + "/" + maxitems + "/" + currentitems + "/" + damage);
+                    scheduledItems.put(mat + "/" + damage, fillrate + "/" + maxitems + "/" + currentitems);
                 }
             }
         }
     }
     
-    public void saveProps(){
+    private void saveProps(){
         String props;
         props = cont.getX() + ";" + cont.getY() + ";" + cont.getZ() + ";";
         
         if(isScheduled){
             props = props + "true;0;0;-";
             int n = scheduledItems.size();
-            List<Material> keys = new ArrayList<Material>(scheduledItems.keySet()); //Make a list so we can get the keys numerically
+            List<String> keys = new ArrayList<String>(scheduledItems.keySet()); //Make a list so we can get the keys numerically
             
             for(int i=0; i<n; i++){
-                Material mat = keys.get(0);
-                String str = scheduledItems.get(mat);
-                String fillrate = str.split("/")[0];
-                String maxitems = str.split("/")[1];
-                String currentitems = str.split("/")[2];
-                String damage = str.split("/")[3];
+                String key = keys.get(i);
+                String mat = key.split("/")[0];
+                String damage = key.split("/")[1];
                 
-                props = props + mat.getId() + "," + fillrate + "," + maxitems + "," + currentitems + "," + damage + ",-";
+                String details = scheduledItems.get(key);
+                int fillrate = getFillRateFromSchedule(details);
+                int maxitems = getMaxItemsFromSchedule(details);
+                int currentitems = getCurrentItemsFromSchedule(details);
+                
+                props = props + mat + "," + fillrate + "," + maxitems + "," + currentitems + "," + damage + ",-";
             }
         } else {
             props = props + "false;" + itemNotScheduled + ";" + damageNotScheduled + ";";
         }
+        setChestProps(cont, props);
     }
     
+    private String getSchedule(Material item, Short damage){
+        String str = item.getId() + "/" + damage;
+        if(scheduledItems.containsKey(str)){
+            return scheduledItems.get(str);
+        }
+        return null;
+    }
+    
+    private int getFillRateFromSchedule(String str){
+        return Integer.parseInt(str.split("/")[0]);
+    }
+    
+    private int getMaxItemsFromSchedule(String str){
+        return Integer.parseInt(str.split("/")[1]);
+    }
+    
+    private int getCurrentItemsFromSchedule(String str){
+        return Integer.parseInt(str.split("/")[2]);
+    }
     
 }
