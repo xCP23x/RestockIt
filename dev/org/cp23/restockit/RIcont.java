@@ -38,7 +38,7 @@ class RIcont extends RestockIt {
             }
             
             
-        } else RestockIt.debug("Null or non-container block given to RIcont");
+        } else debug("Null or non-container block given to RIcont");
     }
     
     public boolean isRIcont(){
