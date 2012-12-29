@@ -3,3 +3,5 @@ blacklist:
   - TNT
 
 opsOverrideBlacklist: false
+debugMessages: false
+MOARdebug: false
