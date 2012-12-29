@@ -66,7 +66,7 @@ class signUtils extends RestockIt {
         sign.update();
     }
     
-    public static int getMaxItems(String line) {
+    public static int getMaxItems(String line, Material mat) {
         String str = line.contains(",") ? line.split(",")[0].toLowerCase().replaceAll(" ", "") : null; //Split the line, else give null
         if(str==null) return 0;
         
@@ -76,7 +76,7 @@ class signUtils extends RestockIt {
             }
             
             if(str.contains("s") || str.contains("stacks") || str.contains("stack")) {//If they've specified a number of stacks
-                return Integer.parseInt(str.replaceAll("stack", "").replaceAll("s", ""))*getMaterial(line).getMaxStackSize();
+                return Integer.parseInt(str.replaceAll("stack", "").replaceAll("s", ""))*mat.getMaxStackSize();
             }
             
             //Assume they mean they want x amount of items
@@ -118,9 +118,9 @@ class signUtils extends RestockIt {
         sign.getWorld().dropItem(loc, new ItemStack(Material.SIGN, 1));
     }
     
-    public static boolean isDelayedSign(String line) {
+    public static boolean isDelayedSign(String line, Material mat) {
         //If max items AND the period aren't specified, it's not a delayed sign
-        if(getMaxItems(line) == 0 || getPeriod(line) == 0) return false;
+        if(getMaxItems(line, mat) == 0 || getPeriod(line) == 0) return false;
         return true;
     }
     

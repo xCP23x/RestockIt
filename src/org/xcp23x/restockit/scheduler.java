@@ -33,7 +33,7 @@ class scheduler extends RestockIt {
                     String line2 = ((Sign)block.getState()).getLine(2);
                     String line3 = ((Sign)block.getState()).getLine(3);
                     
-                    if(chestUtils.getCurrentItems(signUtils.getMaterial(line2), chest) >= signUtils.getMaxItems(line3)) {
+                    if(chestUtils.getCurrentItems(signUtils.getMaterial(line2), chest) >= signUtils.getMaxItems(line3, signUtils.getMaterial(line2))) {
                         RestockIt.debugSched("Container is full at " + getCoords(block));
                         //The chest has reached its limit
                         return;

@@ -32,14 +32,19 @@ public class listeners implements Listener {
     }
     
     private void eventTriggered(Block chest, String line2, String line3, Block sign){
-        if(signUtils.isDelayedSign(line3)){
+        if(signUtils.isDelayedSign(line3, signUtils.getMaterial(line2))){
             scheduler.startSchedule(sign, signUtils.getPeriod(line3)); //If it's a delayed sign, start a schedule
         } else chestUtils.fillChest(chest, line2); //If not, RestockIt.
         
         //New code for delayed double chests
         Block dc = chestUtils.getDoubleChest(chest);
-        String dcline3 = (dc!=null && chestUtils.isRIchest(dc)) ? ((Sign)signUtils.getSignFromChest(dc).getState()).getLine(3) : null;
-        if(dcline3!=null && signUtils.isDelayedSign(dcline3)) scheduler.startSchedule(signUtils.getSignFromChest(dc), signUtils.getPeriod(dcline3));
+        if (dc!=null){
+            Sign dcsign = (chestUtils.isRIchest(dc)) ? ((Sign)signUtils.getSignFromChest(dc).getState()) : null;
+            String dcline2 = dcsign.getLine(2);
+            String dcline3 = dcsign.getLine(3);
+            if(dcline3!=null && signUtils.isDelayedSign(dcline3, signUtils.getMaterial(dcline2)))
+                scheduler.startSchedule(signUtils.getSignFromChest(dc), signUtils.getPeriod(dcline3));
+        }
     }
     
     @EventHandler
