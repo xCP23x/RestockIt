@@ -1,8 +1,8 @@
-//Copyright (C) 2011-2012 Chris Price (xCP23x)
+//Copyright (C) 2011-2013 Chris Price (xCP23x)
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
-package org.xcp23x.restockit;
+package org.cp23.restockit;
 
 import java.util.HashMap;
 import org.bukkit.Material;
@@ -10,9 +10,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
 
-class scheduler extends RestockIt {
+class Scheduler extends RestockIt {
     
-    private static HashMap<Block, Integer> schedules = new HashMap<Block, Integer>(); //This stores task IDs (int) with the blocks they are running on
+    private static final HashMap<Block, Integer> schedules = new HashMap<>(); //This stores task IDs (int) with the blocks they are running on
     
     public static void startSchedule(final Block block, int period) {
         
@@ -24,27 +24,27 @@ class scheduler extends RestockIt {
                 public void run() {
                     //If no sign is there, stop (the player may have removed it mid-count)
                     if (block.getType() != Material.WALL_SIGN && block.getType() != Material.SIGN_POST) {
-                        scheduler.stopSchedule(block);
+                        Scheduler.stopSchedule(block);
                         RestockIt.debugSched("Sign removed, cancelling schedule at " + getCoords(block));
                         return;
                     }
                     
-                    Block chest = chestUtils.getChestFromSign(block);
+                    Block cont = ContUtils.getContFromSign(block);
                     String line2 = ((Sign)block.getState()).getLine(2);
                     String line3 = ((Sign)block.getState()).getLine(3);
                     
-                    if(chestUtils.getCurrentItems(signUtils.getMaterial(line2), chest) >= signUtils.getMaxItems(line3, signUtils.getMaterial(line2))) {
+                    if(ContUtils.getCurrentItems(SignUtils.getMaterial(line2), cont) >= SignUtils.getMaxItems(line3, SignUtils.getMaterial(line2))) {
                         RestockIt.debugSched("Container is full at " + getCoords(block));
                         //The chest has reached its limit
                         return;
                     }
                     
                     //Add item to chest
-                    ItemStack stack = new ItemStack(signUtils.getMaterial(line2), 1);
-                    Short damage = signUtils.getDamage(line2);
+                    ItemStack stack = new ItemStack(SignUtils.getMaterial(line2), 1);
+                    Short damage = SignUtils.getDamage(line2);
                     if (damage >= 0) stack.setDurability(damage);
-                    chestUtils.getInventory(chest).addItem(stack);
-                    RestockIt.debugSched("Added " + signUtils.getMaterial(line2).toString() + " to block at " + getCoords(block));
+                    ContUtils.getInventory(cont).addItem(stack);
+                    RestockIt.debugSched("Added " + SignUtils.getMaterial(line2).toString() + " to block at " + getCoords(block));
                 }
             
             },0,period));

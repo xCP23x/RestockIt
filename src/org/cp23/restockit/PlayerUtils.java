@@ -1,8 +1,8 @@
-//Copyright (C) 2011-2012 Chris Price (xCP23x)
+//Copyright (C) 2011-2013 Chris Price (xCP23x)
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
-package org.xcp23x.restockit;
+package org.cp23.restockit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,13 +10,13 @@ import org.bukkit.entity.Player;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-class playerUtils extends RestockIt {
+class PlayerUtils extends RestockIt {
     //Colours for use in player messages:
-    private static ChatColor bCol = ChatColor.DARK_AQUA; //Bracket colour
-    private static ChatColor rCol = ChatColor.GRAY; // RestockIt colour
-    private static ChatColor eCol = ChatColor.DARK_RED; //Error colour
-    private static ChatColor dCol = ChatColor.RED;//Description colour
-    private static ChatColor sCol = ChatColor.GOLD; //String colour
+    private static final ChatColor bCol = ChatColor.DARK_AQUA; //Bracket colour
+    private static final ChatColor rCol = ChatColor.GRAY; // RestockIt colour
+    private static final ChatColor eCol = ChatColor.DARK_RED; //Error colour
+    private static final ChatColor dCol = ChatColor.RED;//Description colour
+    private static final ChatColor sCol = ChatColor.GOLD; //String colour
     
     public static void sendPlayerMessage(Player player, int number) {
         RestockIt.debug(player.getName() + " sent error message " + number);
@@ -70,6 +70,8 @@ class playerUtils extends RestockIt {
     public static boolean hasPermissions(RIperm riperm){
         String perm = riperm.getPerm();
         String depperm = riperm.getDeprecatedPerm();
+        debug("Permission: " + perm);
+        debug("Deprecated Permission: " + depperm);
         Player player = riperm.getPlayer();
         
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
@@ -77,7 +79,7 @@ class playerUtils extends RestockIt {
         if(pm == null) {
             RestockIt.debug(("Using SuperPerms"));
             if(RestockIt.plugin.getConfig().getBoolean("opsOverrideBlacklist") && player.isOp() && "restockit.blacklist.bypass".equals(perm)) return true;
-            if(player.hasPermission(perm)) return true;
+            if(player.hasPermission(perm))return true;
             if(player.hasPermission(depperm)) {
                 warnDepPermissions(riperm);
                 return true;

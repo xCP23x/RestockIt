@@ -1,8 +1,8 @@
-//Copyright (C) 2011-2012 Chris Price (xCP23x)
+//Copyright (C) 2011-2013 Chris Price (xCP23x)
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
-package org.xcp23x.restockit;
+package org.cp23.restockit;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,7 +11,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-class signUtils extends RestockIt {
+class SignUtils extends RestockIt {
     
     public static Material getMaterial(String line){
         //Return material from line, else AIR
@@ -39,7 +39,7 @@ class signUtils extends RestockIt {
         Material t;
 	String sa[] = (line.indexOf(":") ==1 ? line : line+":0").split(":");
         
-	if ((t = Material.getMaterial(sa[0])) == null) {
+	if ((t = Material.getMaterial(sa[0].toUpperCase())) == null) {
             try {
             	if ((t = Material.getMaterial(Integer.parseInt(sa[0]))) == null) {
                     return -1; // it's an int, but not an valid Material ID.
@@ -81,7 +81,7 @@ class signUtils extends RestockIt {
             
             //Assume they mean they want x amount of items
             return Integer.parseInt(str);
-        } catch(Exception ex){} //Catch anything that may have gone wrong
+        } catch(NumberFormatException ex){} //Catch anything that may have gone wrong
         
         return 0;
     }
@@ -101,7 +101,7 @@ class signUtils extends RestockIt {
             String periodStr = line.contains(",") ? line.split(",")[1].replaceAll(" ", "") : "0";
             int returnInt = periodStr.contains("s") ? (int)Double.parseDouble(periodStr.replaceAll("s", ""))*20 : Integer.parseInt(periodStr);
             if(returnInt>0) return returnInt;
-        } catch(Exception ex){}
+        } catch(NumberFormatException ex){}
         return 0;
     }
     
@@ -119,9 +119,7 @@ class signUtils extends RestockIt {
     }
     
     public static boolean isDelayedSign(String line, Material mat) {
-        //If max items AND the period aren't specified, it's not a delayed sign
-        if(getMaxItems(line, mat) == 0 || getPeriod(line) == 0) return false;
-        return true;
+        return getMaxItems(line, mat) != 0 && getPeriod(line) != 0;
     }
     
     public static boolean isIncinerator(String line) {
@@ -129,19 +127,19 @@ class signUtils extends RestockIt {
         return line.toLowerCase().contains("incinerator");
     }
     
-    public static Block getSignFromChest(Block chest) {
+    public static Block getSignFromCont(Block cont) {
         //Fairly simple, does what it says
-        if(chestUtils.isSignAboveChest(chest)) return getSignAboveChest(chest);
-        if(chestUtils.isSignBelowChest(chest)) return getSignBelowChest(chest);
+        if(ContUtils.isSignAboveCont(cont)) return getSignAboveCont(cont);
+        if(ContUtils.isSignBelowCont(cont)) return getSignBelowCont(cont);
         return null;
     }
     
-    public static Block getSignAboveChest(Block chest) {
-        return chest.getWorld().getBlockAt(chest.getX(), chest.getY() +1, chest.getZ());
+    public static Block getSignAboveCont(Block cont) {
+        return cont.getWorld().getBlockAt(cont.getX(), cont.getY() +1, cont.getZ());
     }
     
-    public static Block getSignBelowChest(Block chest) {
-        return chest.getWorld().getBlockAt(chest.getX(), chest.getY() -1, chest.getZ());
+    public static Block getSignBelowCont(Block cont) {
+        return cont.getWorld().getBlockAt(cont.getX(), cont.getY() -1, cont.getZ());
     }
     
     public static boolean line2hasErrors(String line, Player player) {
@@ -149,13 +147,13 @@ class signUtils extends RestockIt {
         //A frontend for getType(), this tells the player what's going on
         switch(getType(line)){
             case -3:
-                playerUtils.sendPlayerMessage(player, 5, line.split(":")[1]);
+                PlayerUtils.sendPlayerMessage(player, 5, line.split(":")[1]);
                 return true;
             case -2:
-                playerUtils.sendPlayerMessage(player, 4, line.contains(":") ? line.split(":")[0] : line);
+                PlayerUtils.sendPlayerMessage(player, 4, line.contains(":") ? line.split(":")[0] : line);
                 return true;
             case -1:
-                playerUtils.sendPlayerMessage(player, 3, line.contains(":") ? line.split(":")[0] : line);
+                PlayerUtils.sendPlayerMessage(player, 3, line.contains(":") ? line.split(":")[0] : line);
                 return true;
         }
         return false;
