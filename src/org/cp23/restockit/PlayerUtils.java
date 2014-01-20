@@ -80,7 +80,7 @@ class PlayerUtils extends RestockIt {
             RestockIt.debug(("Using SuperPerms"));
             if(RestockIt.plugin.getConfig().getBoolean("opsOverrideBlacklist") && player.isOp() && "restockit.blacklist.bypass".equals(perm)) return true;
             if(player.hasPermission(perm))return true;
-            if(player.hasPermission(depperm)) {
+            if(depperm!=null && player.hasPermission(depperm)) {
                 warnDepPermissions(riperm);
                 return true;
             }
@@ -89,7 +89,7 @@ class PlayerUtils extends RestockIt {
         } else{
             RestockIt.debug("Using PermissionsEx");
             if(pm.has(player, perm, player.getWorld().getName())) return true;
-            if(pm.has(player, depperm, player.getWorld().getName())) {
+            if(depperm!=null && pm.has(player, depperm, player.getWorld().getName())) {
                 warnDepPermissions(riperm);
                 return true;
             }

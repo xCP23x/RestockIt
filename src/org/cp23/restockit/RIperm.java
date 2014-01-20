@@ -78,6 +78,7 @@ class RIperm extends RestockIt {
     public String getDeprecatedPerm(){
         String pre = "restockit.";
         String type = getType();
+        if(type==null) return null;
         
         if(isInList(block.getType(), listType.SINGLE)) return pre + "chest" + type;
         if(isInList(block.getType(), listType.DOUBLE)) return pre + "chest" + type;
