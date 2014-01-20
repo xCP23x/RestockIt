@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 class Scheduler extends RestockIt {
     
-    private static final HashMap<Block, Integer> schedules = new HashMap<>(); //This stores task IDs (int) with the blocks they are running on
+    private static final HashMap<Block, Integer> schedules = new HashMap<Block, Integer>(); //This stores task IDs (int) with the blocks they are running on
     
     public static void startSchedule(final Block block, int period) {
         

@@ -16,6 +16,7 @@ public class RestockIt extends JavaPlugin {
     private static boolean debugEnabled = false;
     private static boolean schedDebugEnabled = false;
     private static List<String> blacklist, singleContainers, doubleContainers, dispensers;
+    public enum listType{BLACKLIST,SINGLE,DOUBLE,DISPENSERS};
     
     @Override
     public void onEnable(){
@@ -37,10 +38,10 @@ public class RestockIt extends JavaPlugin {
         dispensers = RestockIt.plugin.getConfig().getStringList("dispensers");
         
         //Check config for errors (i.e. force any errors to be logged to console)
-        isInList(Material.AIR, "blacklist");
-        isInList(Material.AIR, "singleContainers");
-        isInList(Material.AIR, "doubleContainers");
-        isInList(Material.AIR, "dispensers");
+        isInList(Material.AIR, listType.BLACKLIST);
+        isInList(Material.AIR, listType.SINGLE);
+        isInList(Material.AIR, listType.DOUBLE);
+        isInList(Material.AIR, listType.DISPENSERS);
     }
     
     @Override
@@ -48,23 +49,29 @@ public class RestockIt extends JavaPlugin {
     }
     
     public static boolean isContainer(Material mat){
-        return isInList(mat, "dispensers") || isInList(mat, "singleContainers") || isInList(mat, "doubleContainers");
+        return isInList(mat, listType.DISPENSERS) || isInList(mat, listType.SINGLE) || isInList(mat, listType.DOUBLE);
     }
     
-    public static boolean isInList(Material mat, String listname){
+    public static boolean isInList(Material mat, listType type){
         List<String> list;
-        switch(listname){
-            case "blacklist":
+        String listName;
+        
+        switch(type){
+            case BLACKLIST:
                 list = blacklist;
+                listName = "blacklist";
                 break;
-            case "singleContainers":
+            case SINGLE:
                 list = singleContainers;
+                listName = "singleContainers list";
                 break;
-            case "doubleContainers":
+            case DOUBLE:
                 list = doubleContainers;
+                listName = "doubleContainers list";
                 break;
-            case "dispensers":
+            case DISPENSERS:
                 list = dispensers;
+                listName = "dispensers list";
                 break;
             default:
                 return false;
@@ -74,7 +81,7 @@ public class RestockIt extends JavaPlugin {
         for(int x = 0; x<size; x++) {
             String blItem = list.get(x);
             if(SignUtils.getType(blItem) <= 0) {
-                RestockIt.log.warning("[RestockIt] Error in " + listname + " list: " + blItem + "not recognised - Ignoring");
+                RestockIt.log.warning("[RestockIt] Error in " + listName + ": " + blItem + "not recognised - Ignoring");
             } else if (mat.getId() == SignUtils.getType(blItem)){
                 return true;
             }
