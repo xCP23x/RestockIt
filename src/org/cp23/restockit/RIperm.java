@@ -79,14 +79,14 @@ class RIperm extends RestockIt {
         String pre = "restockit.";
         String type = getType();
         
-        if(isInList(block.getType(), "singleContainers")) return pre + "chest" + type;
-        if(isInList(block.getType(), "doubleContainers")) return pre + "chest" + type;
+        if(isInList(block.getType(), listType.SINGLE)) return pre + "chest" + type;
+        if(isInList(block.getType(), listType.DOUBLE)) return pre + "chest" + type;
         return getPerm();
     }
     
     public String getBlockType(){
         if(line.equalsIgnoreCase("incinerator")) return "incinerator";
-        if(isInList(block.getType(), "dispensers")) return "dispenser";
+        if(isInList(block.getType(), listType.DISPENSERS)) return "dispenser";
         if(isContainer(block.getType())) return "container";
         return block.getType().toString().toLowerCase();
     }

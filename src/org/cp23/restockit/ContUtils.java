@@ -90,13 +90,13 @@ class ContUtils extends RestockIt {
     
     public static Block getDoubleChest(Block cont){
         //Return chest if there is one next to the block given
-        if(!isInList(cont.getType(), "doubleContainers")) return null; //Only continue for containers that can be doubled
+        if(!isInList(cont.getType(), listType.DOUBLE)) return null; //Only continue for containers that can be doubled
         int x = cont.getX(), y = cont.getY(), z = cont.getZ();
         World world = cont.getWorld();
-        if(isInList(world.getBlockAt(x+1, y, z).getType(), "doubleContainers")) return world.getBlockAt(x+1, y, z);
-        if(isInList(world.getBlockAt(x-1, y, z).getType(), "doubleContainers")) return world.getBlockAt(x-1, y, z);
-        if(isInList(world.getBlockAt(x, y, z+1).getType(), "doubleContainers")) return world.getBlockAt(x, y, z+1);
-        if(isInList(world.getBlockAt(x, y, z-1).getType(), "doubleContainers")) return world.getBlockAt(x, y, z-1);
+        if(isInList(world.getBlockAt(x+1, y, z).getType(), listType.DOUBLE)) return world.getBlockAt(x+1, y, z);
+        if(isInList(world.getBlockAt(x-1, y, z).getType(), listType.DOUBLE)) return world.getBlockAt(x-1, y, z);
+        if(isInList(world.getBlockAt(x, y, z+1).getType(), listType.DOUBLE)) return world.getBlockAt(x, y, z+1);
+        if(isInList(world.getBlockAt(x, y, z-1).getType(), listType.DOUBLE)) return world.getBlockAt(x, y, z-1);
         return null;
     }
     

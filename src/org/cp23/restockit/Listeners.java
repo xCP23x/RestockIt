@@ -112,7 +112,7 @@ class Listeners implements Listener {
             perm.setBlacklistBypass();
             
             //Check Blacklist
-            if(RestockIt.isInList(SignUtils.getMaterial(line2), "blacklist") && !PlayerUtils.hasPermissions(perm)){
+            if(RestockIt.isInList(SignUtils.getMaterial(line2), RestockIt.listType.BLACKLIST) && !PlayerUtils.hasPermissions(perm)){
                 PlayerUtils.sendPlayerMessage(player, 7, SignUtils.getMaterial(line2).name());
                     SignUtils.dropSign(sign);
                     return;
@@ -126,7 +126,7 @@ class Listeners implements Listener {
     public void onBlockDispense(BlockDispenseEvent event) { //For auto-refilling dispensers
         RestockIt.debug("Block dispensed");
         Block block = event.getBlock();
-        if(RestockIt.isInList(block.getType(), "dispensers")) {   //Make sure the dispensable dispensee was dispensed by a dispenser
+        if(RestockIt.isInList(block.getType(), RestockIt.listType.DISPENSERS)) {   //Make sure the dispensable dispensee was dispensed by a dispenser
             RestockIt.debug("... by a dispenser");
             if(ContUtils.isRICont(block)) {
                 RestockIt.debug("It's a RestockIt container");
