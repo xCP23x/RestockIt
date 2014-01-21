@@ -55,7 +55,7 @@ class Listeners implements Listener {
         Player player = event.getPlayer();
         String[] lines = event.getLines();
         String line0 = lines[0], line1 = lines[1], line2 = lines[2], line3 = lines[3]; //Get the lines
-        RestockIt.debug("Line0: " + line0 + ", Line1: " + line1 + "Line2: " + line2 + ", Line3: " + line3);
+        RestockIt.debug("Line0: " + line0 + ", Line1: " + line1 + ", Line2: " + line2 + ", Line3: " + line3);
         
         Block block = ContUtils.getContFromSign(sign);
         

@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-class RIperm extends RestockIt {
+class RIperm{
     
     private Boolean isCreated=false, isOpened=false, isDestroyed=false, isBlacklistBypass=false;
     private Block block=null;
@@ -80,15 +80,15 @@ class RIperm extends RestockIt {
         String type = getType();
         if(type==null) return null;
         
-        if(isInList(block.getType(), listType.SINGLE)) return pre + "chest" + type;
-        if(isInList(block.getType(), listType.DOUBLE)) return pre + "chest" + type;
+        if(RestockIt.isInList(block.getType(), RestockIt.listType.SINGLE)) return pre + "chest" + type;
+        if(RestockIt.isInList(block.getType(), RestockIt.listType.DOUBLE)) return pre + "chest" + type;
         return getPerm();
     }
     
     public String getBlockType(){
         if(line.equalsIgnoreCase("incinerator")) return "incinerator";
-        if(isInList(block.getType(), listType.DISPENSERS)) return "dispenser";
-        if(isContainer(block.getType())) return "container";
+        if(RestockIt.isInList(block.getType(), RestockIt.listType.DISPENSERS)) return "dispenser";
+        if(RestockIt.isContainer(block.getType())) return "container";
         return block.getType().toString().toLowerCase();
     }
     
