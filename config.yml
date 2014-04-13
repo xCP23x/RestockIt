@@ -2,6 +2,16 @@ blacklist:
   - BEDROCK
   - TNT
 
-opsOverrideBlacklist: false
-debugMessages: false
-MOARdebug: false
+singleContainers:
+  - HOPPER
+  
+doubleContainers:
+  - CHEST
+  - TRAPPED_CHEST
+
+dispensers:
+  - DISPENSER
+  - DROPPER
+
+opsBypassBlacklist: true
+debug: false
