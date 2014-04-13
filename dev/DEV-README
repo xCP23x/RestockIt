@@ -1,6 +1,0 @@
-The code in this "dev" folder is work on a new version of RestockIt that I started some time ago.
-
-It's meant to be better written in general, with more focus on OOP, along with adding some new features such as RestockIt containers stored to a file rather than individual signs.
-
-Feel free to look around, but bear in mind that all of this code is unfinished.
-
