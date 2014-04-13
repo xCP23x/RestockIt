@@ -1,6 +1,6 @@
 name: RestockIt
 main: org.cp23.restockit.RestockIt
-version: 1.9.2
+version: 2.0-DEV
 commands:
 
 permissions:
@@ -9,19 +9,19 @@ permissions:
     description: Gives access to all RestockIt permisions
     default: false
     children:
-      restockit.container.*: true
+      restockit.chest.*: true
       restockit.dispenser.*: true
       restockit.incinerator.*: true
       restockit.blacklist.*: true
       
   #Defaults for restockit.x.*
-  restockit.container.*:
-    description: Gives access to all container permissions
+  restockit.chest.*:
+    description: Gives access to all chest permissions
     default: op
     children:
-      restockit.container.create: true
-      restockit.container.open: true
-      restockit.container.destroy: true
+      restockit.chest.create: true
+      restockit.chest.open: true
+      restockit.chest.destroy: true
   restockit.dispenser.*:
     description: Gives access to all dispenser permissions
     default: op
@@ -43,13 +43,13 @@ permissions:
       restockit.blacklist.bypass: true
   
   #Defaults for restockit.x.x
-  restockit.container.create:
+  restockit.chest.create:
     description: Allows you to create a RestockIt chest
     default: op
-  restockit.container.open:
+  restockit.chest.open:
     description: Allows you to open a RestockIt chest
     default: true
-  restockit.container.destroy:
+  restockit.chest.destroy:
     description: Allows you to destroy a RestockIt chest
     default: op
     
@@ -71,6 +71,7 @@ permissions:
     default: true
   restockit.incinerator.destroy:
     description: Allows you to destroy a RestockIt incinerator
+    default: true
     
   restockit.blacklist.bypass:
     description: Allows you to bypass the blacklist
@@ -78,21 +79,15 @@ permissions:
     
     
   #DEPRECATED PERMISSIONS
-
-  restockit.chest.*:
-    description: Gives access to all chest permissions
+  
+  restockit.chest:
+    description: DEPRECATED - Use restockit.chest.open and restockit.chest.create (or restockit.chest.*)
     default: false
-    children:
-      restockit.chest.create: false
-      restockit.chest.open: false
-      restockit.chest.destroy: false
-      
-  restockit.chest.create:
-    description: Allows you to create a RestockIt chest
+    
+  restockit.dispenser:
+    description: DEPRECATED - Use restockit.dispenser.open and restockit.dispenser.create (or restockit.dispenser.*)
     default: false
-  restockit.chest.open:
-    description: Allows you to open a RestockIt chest
-    default: false
-  restockit.chest.destroy:
-    description: Allows you to destroy a RestockIt chest
+    
+  restockit.incinerator:
+    description: DEPRECATED - Use restockit.incinerator.open and restockit.incinerator.create (or restockit.incinerator.*)
     default: false

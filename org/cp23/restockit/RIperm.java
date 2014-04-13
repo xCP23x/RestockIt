@@ -1,4 +1,4 @@
-//Copyright (C) 2011-2014 Chris Price (xCP23x)
+//Copyright (C) 2011-2012 Chris Price (xCP23x)
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
@@ -8,12 +8,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-class RIperm{
+class RIperm {
     
     private Boolean isCreated=false, isOpened=false, isDestroyed=false, isBlacklistBypass=false;
-    private Block block=null;
-    private String line=null;
-    private Player player=null;
+    private Block block;
+    private String line;
+    private Player player;
     
     public RIperm(Block bl, Player pl, String ln){
         block = bl;
@@ -77,18 +77,12 @@ class RIperm{
     
     public String getDeprecatedPerm(){
         String pre = "restockit.";
-        String type = getType();
-        if(type==null) return null;
-        
-        if(RestockIt.isInList(block.getType(), RestockIt.listType.SINGLE)) return pre + "chest" + type;
-        if(RestockIt.isInList(block.getType(), RestockIt.listType.DOUBLE)) return pre + "chest" + type;
-        return getPerm();
+        if(line.equalsIgnoreCase("incinerator")) return pre + "incinerator";
+        return pre + block.getType().toString().toLowerCase();
     }
     
     public String getBlockType(){
         if(line.equalsIgnoreCase("incinerator")) return "incinerator";
-        if(RestockIt.isInList(block.getType(), RestockIt.listType.DISPENSERS)) return "dispenser";
-        if(RestockIt.isContainer(block.getType())) return "container";
         return block.getType().toString().toLowerCase();
     }
     

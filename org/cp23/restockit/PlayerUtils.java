@@ -1,4 +1,4 @@
-//Copyright (C) 2011-2014 Chris Price (xCP23x)
+//Copyright (C) 2011-2012 Chris Price (xCP23x)
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
@@ -12,14 +12,14 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 class PlayerUtils extends RestockIt {
     //Colours for use in player messages:
-    private static final ChatColor bCol = ChatColor.DARK_AQUA; //Bracket colour
-    private static final ChatColor rCol = ChatColor.GRAY; // RestockIt colour
-    private static final ChatColor eCol = ChatColor.DARK_RED; //Error colour
-    private static final ChatColor dCol = ChatColor.RED;//Description colour
-    private static final ChatColor sCol = ChatColor.GOLD; //String colour
+    private static ChatColor bCol = ChatColor.DARK_AQUA; //Bracket colour
+    private static ChatColor rCol = ChatColor.GRAY; // RestockIt colour
+    private static ChatColor eCol = ChatColor.DARK_RED; //Error colour
+    private static ChatColor dCol = ChatColor.RED;//Description colour
+    private static ChatColor sCol = ChatColor.GOLD; //String colour
     
     public static void sendPlayerMessage(Player player, int number) {
-        RestockIt.debug(player.getName() + " sent error message " + number);
+        plugin.debug(player.getName() + " sent error message " + number);
         //Give the error code here, so we only have to do it once
         player.sendMessage(bCol + "[" + rCol + "RestockIt" + bCol + "]" + eCol + " Error " + number + ":");
         switch(number){
@@ -36,7 +36,7 @@ class PlayerUtils extends RestockIt {
     }
     
     public static void sendPlayerMessage(Player player, int number, String string) {
-        RestockIt.debug(player.getName() + " sent error message " + number + " with data: " + string);
+        plugin.debug(player.getName() + " sent error message " + number + " with data: " + string);
         //Give the error code here, so we only have to do it once
         player.sendMessage(bCol + "[" + rCol + "RestockIt" + bCol + "]" + eCol + " Error " + number + ":");
         switch(number){
@@ -70,26 +70,24 @@ class PlayerUtils extends RestockIt {
     public static boolean hasPermissions(RIperm riperm){
         String perm = riperm.getPerm();
         String depperm = riperm.getDeprecatedPerm();
-        debug("Permission: " + perm);
-        debug("Deprecated Permission: " + depperm);
         Player player = riperm.getPlayer();
         
         PermissionManager pm = Bukkit.getServer().getPluginManager().isPluginEnabled("PermissionsEx") ? PermissionsEx.getPermissionManager() : null;
         //If using SuperPerms:
         if(pm == null) {
-            RestockIt.debug(("Using SuperPerms"));
+            plugin.debug("Using SuperPerms");
             if(RestockIt.plugin.getConfig().getBoolean("opsOverrideBlacklist") && player.isOp() && "restockit.blacklist.bypass".equals(perm)) return true;
-            if(player.hasPermission(perm))return true;
-            if(depperm!=null && player.hasPermission(depperm)) {
+            if(player.hasPermission(perm)) return true;
+            if(player.hasPermission(depperm)) {
                 warnDepPermissions(riperm);
                 return true;
             }
             
         //If using PermissionsEx:
         } else{
-            RestockIt.debug("Using PermissionsEx");
+            plugin.debug("Using PermissionsEx");
             if(pm.has(player, perm, player.getWorld().getName())) return true;
-            if(depperm!=null && pm.has(player, depperm, player.getWorld().getName())) {
+            if(pm.has(player, depperm, player.getWorld().getName())) {
                 warnDepPermissions(riperm);
                 return true;
             }

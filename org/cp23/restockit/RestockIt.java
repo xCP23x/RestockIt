@@ -1,12 +1,17 @@
-//Copyright (C) 2011-2014 Chris Price (xCP23x)
+//Copyright (C) 2011-2012 Chris Price (xCP23x)
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
 package org.cp23.restockit;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
-import org.bukkit.Material;
+
+import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RestockIt extends JavaPlugin {
@@ -15,8 +20,10 @@ public class RestockIt extends JavaPlugin {
     public static RestockIt plugin;
     private static boolean debugEnabled = false;
     private static boolean schedDebugEnabled = false;
-    private static List<String> blacklist, singleContainers, doubleContainers, dispensers;
-    public enum listType{BLACKLIST,SINGLE,DOUBLE,DISPENSERS};
+    
+    //Prepare config for delayed chests and command chests
+    private static FileConfiguration chests = null;
+    private static File chestsFile = null;
     
     @Override
     public void onEnable(){
@@ -31,71 +38,110 @@ public class RestockIt extends JavaPlugin {
         if(debugEnabled) log.info("[RestockIt] Basic debug messages enabled");
         if(schedDebugEnabled) log.info("[RestockIt] Scheduler debug messages enabled");
         
-        //Load config
-        blacklist = RestockIt.plugin.getConfig().getStringList("blacklist");
-        singleContainers = RestockIt.plugin.getConfig().getStringList("singleContainers");
-        doubleContainers = RestockIt.plugin.getConfig().getStringList("doubleContainers");
-        dispensers = RestockIt.plugin.getConfig().getStringList("dispensers");
-        
-        //Check config for errors (i.e. force any errors to be logged to console)
-        isInList(Material.AIR, listType.BLACKLIST);
-        isInList(Material.AIR, listType.SINGLE);
-        isInList(Material.AIR, listType.DOUBLE);
-        isInList(Material.AIR, listType.DISPENSERS);
+        //Check config for errors
+        List<String> blacklist = plugin.getConfig().getStringList("blacklist");
+        int size = blacklist.size();
+        for(int x = 0; x<size; x++) {
+            if(signUtils.getType(blacklist.get(x)) < 0) {
+                RestockIt.log.warning("[RestockIt] Error in blacklist: " + blacklist.get(x) + " not recognised - Ignoring");
+            }
+        }
     }
     
     @Override
     public void onDisable(){
+        //Save any delayed or command chests
+        this.saveChests();
     }
     
-    public static boolean isContainer(Material mat){
-        return isInList(mat, listType.DISPENSERS) || isInList(mat, listType.SINGLE) || isInList(mat, listType.DOUBLE);
+    public String getChestProps(Block chest){
+        if(chests == null) loadChests();
+        String props = null;
+        try{
+            List<String> strl = chests.getStringList("containers");
+            for(int x = 0; x<strl.size(); x++){
+                String str = strl.get(x);
+                String xcoord = str.split(";")[0];
+                String ycoord = str.split(";")[1];
+                String zcoord = str.split(";")[2];
+                if(xcoord.equals(chest.getX()) && ycoord.equals(chest.getY()) && zcoord.equals(chest.getZ())){
+                    props = str;
+                }
+            }
+        } catch (Exception ex){};
+        return props;
     }
     
-    public static boolean isInList(Material mat, listType type){
-        List<String> list;
-        String listName;
+    public void setChestProps(Block chest, String props){
+        if(chests == null) loadChests();
+        List<String> strl = chests.getStringList("containers");
+        Boolean isInStrl = false;
         
-        switch(type){
-            case BLACKLIST:
-                list = blacklist;
-                listName = "blacklist";
-                break;
-            case SINGLE:
-                list = singleContainers;
-                listName = "singleContainers list";
-                break;
-            case DOUBLE:
-                list = doubleContainers;
-                listName = "doubleContainers list";
-                break;
-            case DISPENSERS:
-                list = dispensers;
-                listName = "dispensers list";
-                break;
-            default:
-                return false;
-        }
-        
-        int size = list.size();
-        for(int x = 0; x<size; x++) {
-            String blItem = list.get(x);
-            if(SignUtils.getType(blItem) <= 0) {
-                RestockIt.log.warning("[RestockIt] Error in " + listName + ": " + blItem + "not recognised - Ignoring");
-            } else if (mat.getId() == SignUtils.getType(blItem)){
-                return true;
+        for(int x = 0; x<strl.size(); x++){
+            String str = strl.get(x);
+            String xcoord = str.split(";")[0];
+            String ycoord = str.split(";")[1];
+            String zcoord = str.split(";")[2];
+            if(xcoord.equals(chest.getX()) && ycoord.equals(chest.getY()) && zcoord.equals(chest.getZ())){
+                isInStrl = true;
+                strl.remove(x);
+                strl.add(props);
             }
         }
-        return false;
+        
+        if(!isInStrl) strl.add(props);
+        chests.set("containers", strl);
     }
     
-    public static void debug(String msg){
+    public void deleteChestProps(Block chest){
+        if(chests == null) loadChests();
+        List<String> strl = chests.getStringList("containers");
+        
+        for(int x = 0; x<strl.size(); x++){
+            String str = strl.get(x);
+            String xcoord = str.split(";")[0];
+            String ycoord = str.split(";")[1];
+            String zcoord = str.split(";")[2];
+            if(xcoord.equals(chest.getX()) && ycoord.equals(chest.getY()) && zcoord.equals(chest.getZ())){
+                strl.remove(x);
+                chests.set("containers", strl);
+            }
+        }
+    }
+    
+    public void loadChests(){
+        //If it's not been loaded, load it
+        if(chestsFile == null){
+            chestsFile = new File(getDataFolder(), "chests.yml");
+        }
+        chests = YamlConfiguration.loadConfiguration(chestsFile);
+    }
+    
+    private FileConfiguration getChestConfig(){
+        if(chests == null){
+            this.loadChests();
+        }
+        return chests;
+    }
+    
+    public void saveChests(){
+        if(chests == null || chestsFile == null){
+            return;
+        }
+        try{
+            getChestConfig().save(chestsFile);
+        } catch (IOException ex){
+            RestockIt.log.severe("[RestockIt] Could not save chest data");
+        }
+    }
+    
+    public void debug(String msg){
         if(debugEnabled == true){
             RestockIt.log.info("[RestockIt][DEBUG]: "+msg);
         }
     }
     
-    public static void debugSched(String msg){
+    public void debugSched(String msg){
         if(schedDebugEnabled == true){
             RestockIt.log.info("[RestockIt][SCHEDULER-DEBUG]: " +msg);
         }
