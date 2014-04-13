@@ -1,7 +1,0 @@
-blacklist:
-  - BEDROCK
-  - TNT
-
-opsOverrideBlacklist: false
-debugMessages: false
-MOARdebug: false
