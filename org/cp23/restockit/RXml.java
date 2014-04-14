@@ -4,17 +4,27 @@
 
 package org.cp23.restockit;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement
+@XmlSeeAlso(RCont.class)
 public class RXml {
     private final List<RCont> contList = new ArrayList<>();
     private final RestockIt plugin = RestockIt.plugin;
     
     public RXml(){
         //Load stuff
+    }
+    
+    public void addToList(RCont cont){
+        //Test code
+        contList.add(cont);
     }
     
     public boolean isRCont(RCont cont){
@@ -24,5 +34,17 @@ public class RXml {
     @XmlAnyElement(lax=true)
     public List<RCont> getContList(){
         return contList;
+    }
+    
+    public void save(){
+        try{
+            JAXBContext context = JAXBContext.newInstance(this.getClass());
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            File file = new File("plugins/RestockIt/containers.xml");
+            marshaller.marshal(this, file);
+        } catch(JAXBException e){
+            e.printStackTrace();
+        }
     }
 }

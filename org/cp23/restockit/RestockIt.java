@@ -27,6 +27,11 @@ public class RestockIt extends JavaPlugin {
         loadConfig();
         getCommand("restockit").setExecutor(new CommandListener());
         plugin.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
+        
+        //TEST CODE
+        RCont cont = new RCont(plugin.getServer().getWorlds().get(0).getBlockAt(1, 1, 1));
+        rxml.addToList(cont);
+        rxml.save();
     }
     
     @Override

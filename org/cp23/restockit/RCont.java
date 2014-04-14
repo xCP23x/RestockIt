@@ -6,27 +6,28 @@ package org.cp23.restockit;
 
 import javax.xml.bind.annotation.*;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
+@XmlRootElement
 public class RCont {
     private final Block block;
     private InventoryHolder holder;
-    private boolean isRCont;
+    RXml rx = RestockIt.rxml;
+    
+    public RCont(){
+        block = null;
+    }
     
     public RCont(Block bl){
-        isRCont = false;
         block = bl;
         if(block instanceof InventoryHolder){
             holder = (InventoryHolder) bl;
-            Inventory inv;
-            RXml rx = RestockIt.rxml;
-            isRCont = rx.isRCont(this);
+            
         }
     }
     
     public boolean isRCont(){
-        return isRCont;
+        return rx.isRCont(this);
     }
     
     

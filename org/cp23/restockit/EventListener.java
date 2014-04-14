@@ -27,7 +27,7 @@ public class EventListener implements Listener{
             Block block = event.getClickedBlock();
             RCont cont = new RCont(block);
             if(cont.isRCont()){
-                
+                //Do stuff
             }
         }
     }
