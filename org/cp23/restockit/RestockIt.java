@@ -1,4 +1,4 @@
-//Copyright (C) 2011-2012 Chris Price (xCP23x)
+//Copyright (C) 2011-2014 Chris Price (xCP23x)
 //This software uses the GNU GPL v2 license
 //See http://github.com/xCP23x/RestockIt/blob/master/README and http://github.com/xCP23x/RestockIt/blob/master/LICENSE for details
 
@@ -6,7 +6,6 @@ package org.cp23.restockit;
 
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,6 +13,7 @@ public class RestockIt extends JavaPlugin {
     
     public static final Logger log = Logger.getLogger("Minecraft");
     public static RestockIt plugin;
+    public static RXml rxml;
     
     //Config variables
     private static boolean debugEnabled;
@@ -23,8 +23,10 @@ public class RestockIt extends JavaPlugin {
     @Override
     public void onEnable(){
         plugin = this;
+        rxml = new RXml();
         loadConfig();
-        //TODO: Register listeners
+        getCommand("restockit").setExecutor(new CommandListener());
+        plugin.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
     }
     
     @Override

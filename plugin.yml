@@ -5,6 +5,12 @@ description: Automatically fill containers with items!
 author: xCP23x
 website: http://dev.bukkit.org/bukkit-plugins/RestockIt/
 
+commands:
+    restockit:
+        description: Automatically fill containers with items!
+        usage: Use /ri help for usage
+        aliases: restockit
+
 permissions:
   #Defaults for restockit.*
   restockit.*:
