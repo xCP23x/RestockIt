@@ -13,10 +13,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement
-@XmlSeeAlso(RCont.class)
+@XmlSeeAlso({RCont.class, RItemStack.class})
 public class RXml {
+    //contList is a list of ALL registered containers
     private final List<RCont> contList = new ArrayList<>();
     private final RestockIt plugin = RestockIt.plugin;
+    private static final int version = 1;
     
     public RXml(){
         //Load stuff
@@ -31,11 +33,6 @@ public class RXml {
         return false;
     }
     
-    @XmlAnyElement(lax=true)
-    public List<RCont> getContList(){
-        return contList;
-    }
-    
     public void save(){
         try{
             JAXBContext context = JAXBContext.newInstance(this.getClass());
@@ -46,5 +43,16 @@ public class RXml {
         } catch(JAXBException e){
             e.printStackTrace();
         }
+    }
+    
+    
+    @XmlElement
+    public int getVersion(){
+        return version;
+    }
+    
+    @XmlAnyElement(lax=true)
+    public List<RCont> getContList(){
+        return contList;
     }
 }
