@@ -5,8 +5,6 @@
 package org.cp23.restockit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import javax.xml.bind.annotation.*;
@@ -23,7 +21,7 @@ public class RCont {
     //Variables to be saved in XML (MUST have public set methods)
     private int x, y, z;
     private UUID worldUID;
-    private final List<RItemStack> rISList = new ArrayList<>();
+    private List<RItemStack> rISList = new ArrayList<>();
     
     //Transient variables
     private transient Block block;
@@ -35,21 +33,31 @@ public class RCont {
     
     public RCont(){
         //ONLY called when restoring from XML
-        xmlToTransient();
     }
     
     public RCont(Block bl){
         block = bl;
-        transientToXml();
+    }
+    
+    public boolean isInXml(){
+        return rx.isInXml(this);
     }
     
     public boolean isRCont(){
-        return rx.isRCont(this);
+        //TODO
+        return false;
+    }
+    
+    public void addItemStack(ItemStack is){
+        //TEST CODE (See RestockIt.java:39)
+        ((InventoryHolder)block.getState()).getInventory().addItem(is);
     }
     
     
-    private void xmlToTransient(){
+    public void xmlToTransient(){
         //Translates all XML-saved variables to transient variables
+        //Called after XML load
+        plugin.debug(x+ "," + y + "," + z);
         World world = plugin.getServer().getWorld(worldUID);
         block = world.getBlockAt(x, y, z);
         
@@ -63,8 +71,9 @@ public class RCont {
         }
     }
     
-    private void transientToXml(){
+    public void transientToXml(){
         //Translates all relevant transient variables to XML-saved variables
+        //Called on XML save
         x=block.getX(); y=block.getY(); z=block.getZ();
         worldUID = block.getWorld().getUID();
         if(block.getState() instanceof InventoryHolder){
@@ -77,32 +86,45 @@ public class RCont {
     }
     
     
-    public void addItemStack(ItemStack is){
-        //TEST CODE (See RestockIt.java:39)
-        ((InventoryHolder)block.getState()).getInventory().addItem(is);
-        transientToXml();
-    }
-    
-    
-    //getter methods for XML variables
+    //XML Getters and setters
+    //These should NOT be assumed to be up to date unless transientToXml() is run!
     @XmlElement()
     public int getX(){
         return x;
     }
+    public void setX(int n){
+        x = n;
+    }
+    
     @XmlElement
     public int getY(){
         return y;
     }
+    public void setY(int n){
+        y = n;
+    }
+    
     @XmlElement
     public int getz(){
         return z;
     }
+    public void setZ(int n){
+        z = n;
+    }
+    
     @XmlElement
     public UUID getWorldUID(){
         return worldUID;
     }
+    public void setWorldUID(UUID u){
+        worldUID = u;
+    }
+    
     @XmlElement(name="itemStack")
     public List<RItemStack> getrISList(){
         return rISList;
+    }
+    public void setrISList(List<RItemStack> l){
+        rISList = l;
     }
 }

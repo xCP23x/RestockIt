@@ -35,7 +35,7 @@ public class RestockIt extends JavaPlugin {
         getCommand("restockit").setExecutor(new CommandListener());
         plugin.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
         
-        
+        /*
         //TEST CODE
         Block block = plugin.getServer().getWorlds().get(0).getBlockAt(1, 1, 1);
         block.setType(Material.CHEST);
@@ -61,6 +61,11 @@ public class RestockIt extends JavaPlugin {
         rxml.addToList(cont);
         rxml.save();
         //END OF TEST CODE
+        */
+                
+        rxml.load();
+        debug(rxml.getContList().get(0).getWorldUID()+"");
+        rxml.save();
     }
     
     @Override

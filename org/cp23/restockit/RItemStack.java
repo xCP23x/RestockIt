@@ -18,16 +18,16 @@ import org.bukkit.material.MaterialData;
 @XmlType(propOrder={"typeName", "damage", "data", "amount", "displayName", "lore", "enchantMap"})
 public class RItemStack {
     //Gives an ItemStack that can be serialized into XML
-    
-    private final transient RestockIt plugin = RestockIt.plugin;
-    
     //XML serializable variables
     private String typeName, displayName;
-    private int amount;
+    private int amount, ticksPerItem, maxItems;
     private short damage;
-    private byte data; //This is deprecated, but will have to stay until there's actually a way to get the data
-    private final Map<String, Integer> enchantMap = new HashMap<>();
+    private byte data;      //This is deprecated, but will have to stay until there's actually a way to get the data
+    private Map<String, Integer> enchantMap = new HashMap<>();
     private List<String> lore;
+    
+    //Transient variables
+    private final transient RestockIt plugin = RestockIt.plugin;
     
     public RItemStack(){
         //ONLY called when restoring from XML
@@ -42,6 +42,8 @@ public class RItemStack {
         data = is.getData().getData(); 
         lore = is.getItemMeta().getLore();
         displayName = is.getItemMeta().getDisplayName();
+        ticksPerItem = 0;
+        maxItems = is.getMaxStackSize();
         
         for(Enchantment enc : is.getEnchantments().keySet()){
             enchantMap.put(enc.getName(), is.getEnchantmentLevel(enc));
@@ -64,33 +66,69 @@ public class RItemStack {
         return is;
     }
     
+    public void setMaxItems(int n){
+        maxItems = n;
+    }
     
+    public void setTicksPerItem(int n){
+        ticksPerItem = n;
+    }
+    
+    
+    //XML Getters and Setters
     @XmlElement(name="type")
     public String getTypeName(){
         return typeName;
     }
+    public void setTypeName(String s){
+        typeName = s;
+    }
+    
     @XmlElement
     public String getDisplayName(){
         return displayName;
     }
+    public void setDisplayName(String s){
+        displayName = s;
+    }
+    
     @XmlElement
     public int getAmount(){
         return amount;
     }
+    public void setAmount(int n){
+        amount = n;
+    }
+    
     @XmlElement
     public short getDamage(){
         return damage;
     }
+    public void setDamage(Short s){
+        damage = s;
+    }
+    
     @XmlElement
     public byte getData(){
         return data;
     }
+    public void setData(Byte b){
+        data = b;
+    }
+    
     @XmlElement(name="enchantments")
     public Map<String, Integer> getEnchantMap(){
         return enchantMap;
     }
+    public void setEnchantMap(Map<String, Integer> m){
+        enchantMap = m;
+    }
+    
     @XmlElement
     public List<String> getLore(){
         return lore;
+    }
+    public void setLore(List<String> sl){
+        lore = sl;
     }
 }
