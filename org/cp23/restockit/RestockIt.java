@@ -4,9 +4,16 @@
 
 package org.cp23.restockit;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RestockIt extends JavaPlugin {
@@ -28,10 +35,32 @@ public class RestockIt extends JavaPlugin {
         getCommand("restockit").setExecutor(new CommandListener());
         plugin.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
         
+        
         //TEST CODE
-        RCont cont = new RCont(plugin.getServer().getWorlds().get(0).getBlockAt(1, 1, 1));
+        Block block = plugin.getServer().getWorlds().get(0).getBlockAt(1, 1, 1);
+        block.setType(Material.CHEST);
+        ((InventoryHolder)block.getState()).getInventory().clear();
+        RCont cont = new RCont(block);
+        
+        ItemStack is = new ItemStack(Material.ARROW, 10);
+        cont.addItemStack(is);
+        
+        is = new ItemStack(Material.DIAMOND_SWORD);
+        is.addEnchantment(Enchantment.KNOCKBACK, 2);
+        is.addEnchantment(Enchantment.DURABILITY, 3);
+        ItemMeta im = is.getItemMeta();
+        im.setDisplayName("AWESOMESWORD of AWESOMENESS");
+        List<String> sl = new ArrayList<>();
+        sl.add("THIS");
+        sl.add("WORKS");
+        sl.add("PERFECTLY");
+        im.setLore(sl);
+        is.setItemMeta(im);
+        cont.addItemStack(is);
+        
         rxml.addToList(cont);
         rxml.save();
+        //END OF TEST CODE
     }
     
     @Override

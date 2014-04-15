@@ -12,8 +12,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.*;
 
-@XmlRootElement
-@XmlSeeAlso({RCont.class, RItemStack.class})
+@XmlRootElement(name="containerList")
+@XmlType(propOrder={"version", "contList"})
+@XmlSeeAlso(RCont.class)
 public class RXml {
     //contList is a list of ALL registered containers
     private final List<RCont> contList = new ArrayList<>();

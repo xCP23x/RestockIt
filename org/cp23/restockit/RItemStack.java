@@ -4,6 +4,7 @@
 
 package org.cp23.restockit;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.*;
@@ -13,16 +14,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
-@XmlRootElement
+@XmlRootElement(name="itemStack")
+@XmlType(propOrder={"typeName", "damage", "data", "amount", "displayName", "lore", "enchantMap"})
 public class RItemStack {
     //Gives an ItemStack that can be serialized into XML
+    
+    private final transient RestockIt plugin = RestockIt.plugin;
     
     //XML serializable variables
     private String typeName, displayName;
     private int amount;
     private short damage;
     private byte data; //This is deprecated, but will have to stay until there's actually a way to get the data
-    private Map<String, Integer> enchantMap;
+    private final Map<String, Integer> enchantMap = new HashMap<>();
     private List<String> lore;
     
     public RItemStack(){
@@ -30,6 +34,7 @@ public class RItemStack {
     }
     
     public RItemStack(ItemStack is){
+        if(is==null) return;
         Material mat = is.getType();
         amount = is.getAmount();
         damage = is.getDurability();
@@ -60,23 +65,27 @@ public class RItemStack {
     }
     
     
-    @XmlElement
+    @XmlElement(name="type")
     public String getTypeName(){
         return typeName;
+    }
+    @XmlElement
+    public String getDisplayName(){
+        return displayName;
     }
     @XmlElement
     public int getAmount(){
         return amount;
     }
     @XmlElement
-    public short getDurability(){
+    public short getDamage(){
         return damage;
     }
     @XmlElement
     public byte getData(){
         return data;
     }
-    @XmlElement
+    @XmlElement(name="enchantments")
     public Map<String, Integer> getEnchantMap(){
         return enchantMap;
     }
