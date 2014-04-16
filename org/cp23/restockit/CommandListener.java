@@ -4,9 +4,13 @@
 
 package org.cp23.restockit;
 
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.util.BlockIterator;
 
 public class CommandListener implements CommandExecutor {
     private final RestockIt plugin = RestockIt.plugin;
@@ -15,7 +19,39 @@ public class CommandListener implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(cmd.getName().equalsIgnoreCase("restockit")){
             switch(args[0].toLowerCase()){
+                case "addcont":
+                    //TEST CODE
+                    if(sender instanceof Player){
+                        Player player = (Player) sender;
+                        BlockIterator bi = new BlockIterator(player);
+                        while(bi.hasNext()){
+                            Block block = bi.next();
+                            
+                            if(block.getState() instanceof InventoryHolder){
+                                RestockIt.rxml.addToList(new RCont(block));
+                                RestockIt.rxml.save();
+                                plugin.debug("Added container");
+                                break;
+                            } else if(block.getType().isSolid()){
+                                //Player could be inside a non-solid block (e.g. torch), or it could be air
+                                break;
+                            }
+                        }
+                    }
+                    //END OF TEST CODE
+                    break;
+                case "save":
+                    //TEST CODE
+                    RestockIt.rxml.save();
+                    break;
+                case "load":
+                    //TEST CODE
+                    try{
+                        RestockIt.rxml.load();
+                    } catch(RXml.RXmlException e){}
+                    break;
                 
+                    
                 case "help":
                     
                     break;

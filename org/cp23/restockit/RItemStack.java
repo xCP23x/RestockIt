@@ -15,14 +15,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 @XmlRootElement(name="itemStack")
-@XmlType(propOrder={"typeName", "damage", "data", "amount", "displayName", "lore", "enchantMap"})
+@XmlType(propOrder={"typeName", "amount", "damage", "data", "maxAmount", "ticksPerItem", "displayName", "lore", "enchantMap"})
 public class RItemStack {
     //Gives an ItemStack that can be serialized into XML
     //XML serializable variables
     private String typeName, displayName;
-    private int amount, ticksPerItem, maxItems;
+    private int amount, ticksPerItem, maxAmount;
     private short damage;
-    private byte data;      //This is deprecated, but will have to stay until there's actually a way to get the data
+    private byte data;      //This is deprecated, there's no actual way to get/set data in bukkit
     private Map<String, Integer> enchantMap = new HashMap<>();
     private List<String> lore;
     
@@ -35,15 +35,14 @@ public class RItemStack {
     
     public RItemStack(ItemStack is){
         if(is==null) return;
-        Material mat = is.getType();
+        typeName = is.getType().name();
         amount = is.getAmount();
         damage = is.getDurability();
-        typeName = mat.name();
-        data = is.getData().getData(); 
+        data = is.getData().getData();
         lore = is.getItemMeta().getLore();
         displayName = is.getItemMeta().getDisplayName();
         ticksPerItem = 0;
-        maxItems = is.getMaxStackSize();
+        maxAmount = is.getMaxStackSize();
         
         for(Enchantment enc : is.getEnchantments().keySet()){
             enchantMap.put(enc.getName(), is.getEnchantmentLevel(enc));
@@ -51,7 +50,9 @@ public class RItemStack {
     }
     
     public ItemStack getItemStack(){
+        if(typeName==null) return null;
         Material mat = Material.getMaterial(typeName);
+            
         ItemStack is = new ItemStack(mat, amount, damage);
         is.setData(new MaterialData(mat, data));
         
@@ -62,17 +63,10 @@ public class RItemStack {
         for(Map.Entry<String, Integer> entry : enchantMap.entrySet()){
             im.addEnchant(Enchantment.getByName(entry.getKey()), entry.getValue(), true);
         }
-        
+        is.setItemMeta(im);
         return is;
     }
     
-    public void setMaxItems(int n){
-        maxItems = n;
-    }
-    
-    public void setTicksPerItem(int n){
-        ticksPerItem = n;
-    }
     
     
     //XML Getters and Setters
@@ -104,7 +98,7 @@ public class RItemStack {
     public short getDamage(){
         return damage;
     }
-    public void setDamage(Short s){
+    public void setDamage(short s){
         damage = s;
     }
     
@@ -112,11 +106,11 @@ public class RItemStack {
     public byte getData(){
         return data;
     }
-    public void setData(Byte b){
+    public void setData(byte b){
         data = b;
     }
     
-    @XmlElement(name="enchantments")
+    @XmlElement
     public Map<String, Integer> getEnchantMap(){
         return enchantMap;
     }
@@ -130,5 +124,21 @@ public class RItemStack {
     }
     public void setLore(List<String> sl){
         lore = sl;
+    }
+    
+    @XmlElement
+    public int getTicksPerItem(){
+        return ticksPerItem;
+    }
+    public void setTicksPerItem(int n){
+        ticksPerItem = n;
+    }
+    
+    @XmlElement
+    public int getMaxAmount(){
+        return maxAmount;
+    }
+    public void setmaxAmount(int i){
+        maxAmount = i;
     }
 }

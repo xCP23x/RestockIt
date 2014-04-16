@@ -2,13 +2,6 @@ blacklist:
   - BEDROCK
   - TNT
 
-singleContainers:
-  - HOPPER
-  
-doubleContainers:
-  - CHEST
-  - TRAPPED_CHEST
-
 dispensers:
   - DISPENSER
   - DROPPER

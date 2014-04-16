@@ -9,7 +9,7 @@ commands:
     restockit:
         description: Automatically fill containers with items!
         usage: Use /ri help for usage
-        aliases: restockit
+        aliases: ri
 
 permissions:
   #Defaults for restockit.*

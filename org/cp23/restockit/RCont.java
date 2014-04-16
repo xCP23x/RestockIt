@@ -57,15 +57,14 @@ public class RCont {
     public void xmlToTransient(){
         //Translates all XML-saved variables to transient variables
         //Called after XML load
-        plugin.debug(x+ "," + y + "," + z);
         World world = plugin.getServer().getWorld(worldUID);
         block = world.getBlockAt(x, y, z);
         
         //Replace all items in inventory
-        if(block instanceof InventoryHolder){
+        if(block.getState() instanceof InventoryHolder){
             Inventory inv = ((InventoryHolder) block.getState()).getInventory();
+            inv.clear();
             for(int i=0; i<rISList.size(); i++){
-                inv.clear();
                 inv.setItem(i, rISList.get(i).getItemStack());
             }
         }
@@ -74,8 +73,10 @@ public class RCont {
     public void transientToXml(){
         //Translates all relevant transient variables to XML-saved variables
         //Called on XML save
+        rISList.clear();
         x=block.getX(); y=block.getY(); z=block.getZ();
         worldUID = block.getWorld().getUID();
+        
         if(block.getState() instanceof InventoryHolder){
             InventoryHolder ivh = (InventoryHolder) block.getState();
             ItemStack[] itemStackArr = ivh.getInventory().getContents();
@@ -84,6 +85,7 @@ public class RCont {
             }
         }
     }
+    
     
     
     //XML Getters and setters

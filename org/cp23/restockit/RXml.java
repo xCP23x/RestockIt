@@ -6,7 +6,6 @@ package org.cp23.restockit;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -27,7 +26,7 @@ public class RXml {
     
     
     //XML serializable variables
-    private List<RCont> contList = new ArrayList<>();
+    private ArrayList<RCont> contList = new ArrayList<>();
     private static final int version = 1;
     
     //Transient variables
@@ -84,6 +83,7 @@ public class RXml {
             }
         } catch(JAXBException e){
             e.printStackTrace();
+            plugin.debug("CAUGHT");
         }
     }
     
@@ -98,10 +98,10 @@ public class RXml {
     }
     
     @XmlAnyElement(lax=true)
-    public List<RCont> getContList(){
+    public ArrayList<RCont> getContList(){
         return contList;
     }
-    public void setContList(List<RCont> cl){
+    public void setContList(ArrayList<RCont> cl){
         contList = cl;
     }
 }
