@@ -17,6 +17,15 @@ import javax.xml.bind.annotation.*;
 @XmlType(propOrder={"version", "contList"})
 @XmlSeeAlso(RCont.class)
 public class RXml {
+    
+    public class RXmlException extends Exception{
+        //Thrown if a file version newer than current is loaded
+        public RXmlException(String msg){
+            super(msg);
+        }
+    }
+    
+    
     //XML serializable variables
     private List<RCont> contList = new ArrayList<>();
     private static final int version = 1;
@@ -49,14 +58,14 @@ public class RXml {
             JAXBContext context = JAXBContext.newInstance(this.getClass());
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            File file = new File("plugins/RestockIt/containers2.xml");
+            File file = new File("plugins/RestockIt/containers.xml");
             marshaller.marshal(this, file);
         } catch(JAXBException e){
             e.printStackTrace();
         }
     }
     
-    public void load(){
+    public void load() throws RXmlException{
         try{
             JAXBContext context = JAXBContext.newInstance(this.getClass());
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -64,6 +73,9 @@ public class RXml {
             RXml rx = (RXml) unmarshaller.unmarshal(file);
             contList = rx.contList;
             fileVersion = rx.fileVersion;
+            if(fileVersion > version){
+                throw new RXmlException("XML file version too new: Plugin version " + version + ", file version " +fileVersion);
+            }
             
             for(RCont cont: contList){
                 //Load XML settings to transient variables

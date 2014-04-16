@@ -15,6 +15,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.cp23.restockit.RXml.RXmlException;
 
 public class RestockIt extends JavaPlugin {
     
@@ -62,9 +63,14 @@ public class RestockIt extends JavaPlugin {
         rxml.save();
         //END OF TEST CODE
         */
-                
-        rxml.load();
-        debug(rxml.getContList().get(0).getWorldUID()+"");
+        
+        try{
+            rxml.load();
+        } catch(RXmlException e){
+            e.printStackTrace();
+            return;
+        }
+        
         rxml.save();
     }
     

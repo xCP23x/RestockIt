@@ -105,7 +105,7 @@ public class RCont {
     }
     
     @XmlElement
-    public int getz(){
+    public int getZ(){
         return z;
     }
     public void setZ(int n){
