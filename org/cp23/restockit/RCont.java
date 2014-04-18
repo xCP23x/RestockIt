@@ -37,6 +37,7 @@ public class RCont {
     
     public RCont(Block bl){
         block = bl;
+        transientToXml();
     }
     
     public boolean isInXml(){
@@ -51,6 +52,7 @@ public class RCont {
     public void addItemStack(ItemStack is){
         //TEST CODE (See RestockIt.java:39)
         ((InventoryHolder)block.getState()).getInventory().addItem(is);
+        transientToXml();
     }
     
     

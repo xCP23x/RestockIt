@@ -31,20 +31,18 @@ public class RestockIt extends JavaPlugin {
         
         
         try{
-            rxml.load();
+            rxml.load("containers.xml");
         } catch(RXmlException e){
-            e.printStackTrace();
-            debug("CAUGHT");
+            debug("Version too new"); //ADD PROPER MESSAGE
             return;
         }
-        
                 
-        rxml.save();
+        rxml.save("containers.xml");
     }
     
     @Override
     public void onDisable(){
-        rxml.save();
+        rxml.save("containers.xml");
     }
     
     private void loadConfig(){   

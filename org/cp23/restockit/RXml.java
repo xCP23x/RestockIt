@@ -24,18 +24,17 @@ public class RXml {
         }
     }
     
-    
     //XML serializable variables
     private ArrayList<RCont> contList = new ArrayList<>();
     private static final int version = 1;
     
     //Transient variables
+    private transient final String filePath = "plugins/RestockIt/";
     private transient final RestockIt plugin = RestockIt.plugin;
     private transient int fileVersion;
     
     
     public RXml(){
-        //Load stuff
     }
     
     public void addToList(RCont cont){
@@ -43,32 +42,38 @@ public class RXml {
     }
     
     public boolean isInXml(RCont cont){
-        //TODO
+        for(RCont c : contList){
+            if(c.getX()==cont.getX() && c.getY()==cont.getY() && c.getZ()==cont.getZ() && c.getWorldUID()==cont.getWorldUID()){
+                return true;
+            }
+        }
         return false;
     }
     
-    public void save(){
+    public void save(String fileName){
         try{
             for(RCont cont: contList){
-                //Load transient container variables to XML settings
+                //Double check that all XML variables are up to date
                 cont.transientToXml();
             }
             
             JAXBContext context = JAXBContext.newInstance(this.getClass());
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            File file = new File("plugins/RestockIt/containers.xml");
+            File file = new File(filePath + fileName);
             marshaller.marshal(this, file);
         } catch(JAXBException e){
-            e.printStackTrace();
+            plugin.debug(e.getStackTrace().toString());
+            plugin.debug("Couldn't save file "+ fileName); //ADD PROPER MESSAGE
         }
     }
     
-    public void load() throws RXmlException{
+    public void load(String fileName) throws RXmlException{
         try{
             JAXBContext context = JAXBContext.newInstance(this.getClass());
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            File file = new File("plugins/RestockIt/containers.xml");
+            
+            File file = new File(filePath + fileName);
             RXml rx = (RXml) unmarshaller.unmarshal(file);
             contList = rx.contList;
             fileVersion = rx.fileVersion;
@@ -82,8 +87,8 @@ public class RXml {
                 cont.xmlToTransient();
             }
         } catch(JAXBException e){
-            e.printStackTrace();
-            plugin.debug("CAUGHT");
+            plugin.debug(e.getStackTrace().toString());
+            plugin.debug("Couldn't load file "+ fileName); //ADD PROPER MESSAGE
         }
     }
     

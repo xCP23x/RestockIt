@@ -29,7 +29,7 @@ public class CommandListener implements CommandExecutor {
                             
                             if(block.getState() instanceof InventoryHolder){
                                 RestockIt.rxml.addToList(new RCont(block));
-                                RestockIt.rxml.save();
+                                RestockIt.rxml.save("containers.xml");
                                 plugin.debug("Added container");
                                 break;
                             } else if(block.getType().isSolid()){
@@ -42,12 +42,12 @@ public class CommandListener implements CommandExecutor {
                     break;
                 case "save":
                     //TEST CODE
-                    RestockIt.rxml.save();
+                    RestockIt.rxml.save("containers.xml");
                     break;
                 case "load":
                     //TEST CODE
                     try{
-                        RestockIt.rxml.load();
+                        RestockIt.rxml.load("containers.xml");
                     } catch(RXml.RXmlException e){}
                     break;
                 
