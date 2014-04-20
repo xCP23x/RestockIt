@@ -16,13 +16,17 @@ import org.bukkit.material.MaterialData;
 
 @XmlRootElement(name="itemStack")
 @XmlType(propOrder={"typeName", "amount", "damage", "data", "maxAmount", "ticksPerItem", "displayName", "lore", "enchantMap"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RItemStack {
     //Gives an ItemStack that can be serialized into XML
+    
     //XML serializable variables
+    //Use classes rather than primitive types so we can easily convert to string
     private String typeName, displayName;
-    private int amount, ticksPerItem, maxAmount;
-    private short damage;
-    private byte data;      //This is deprecated, there's no actual way to get/set data in bukkit
+    private Integer amount, ticksPerItem, maxAmount;
+    private Short damage;
+    private Byte data;      //This is deprecated, but there's no actual way to get/set data in bukkit
+    @XmlTransient
     private Map<String, Integer> enchantMap = new HashMap<>();
     private List<String> lore;
     
@@ -35,6 +39,7 @@ public class RItemStack {
     
     public RItemStack(ItemStack is){
         if(is==null) return;
+        
         typeName = is.getType().name();
         amount = is.getAmount();
         damage = is.getDurability();
@@ -50,9 +55,9 @@ public class RItemStack {
     }
     
     public ItemStack getItemStack(){
-        if(typeName==null) return null;
+        if(amount==null) return new ItemStack(Material.AIR); //It's an empty stack
+        
         Material mat = Material.getMaterial(typeName);
-            
         ItemStack is = new ItemStack(mat, amount, damage);
         is.setData(new MaterialData(mat, data));
         
@@ -69,8 +74,8 @@ public class RItemStack {
     
     
     
-    //XML Getters and Setters
-    @XmlElement(name="type")
+    //Getters and setters for XML variables
+    //Convert numerical types to String - allows null fields to stay empty
     public String getTypeName(){
         return typeName;
     }
@@ -78,7 +83,41 @@ public class RItemStack {
         typeName = s;
     }
     
-    @XmlElement
+    public String getAmount(){
+        return (amount==null)? null: amount.toString();
+    }
+    public void setAmount(Integer n){
+        amount = n;
+    }
+    
+    public String getDamage(){
+        return (damage==null)? null: damage.toString();
+    }
+    public void setDamage(Short s){
+        damage = s;
+    }
+    
+    public String getData(){
+        return (data==null)? null: data.toString();
+    }
+    public void setData(Byte b){
+        data = b;
+    }
+    
+    public String getMaxAmount(){
+        return (maxAmount==null)? null: maxAmount.toString();
+    }
+    public void setmaxAmount(Integer i){
+        maxAmount = i;
+    }
+    
+    public String getTicksPerItem(){
+        return (ticksPerItem==null)? null: ticksPerItem.toString();
+    }
+    public void setTicksPerItem(Integer n){
+        ticksPerItem = n;
+    }
+    
     public String getDisplayName(){
         return displayName;
     }
@@ -86,39 +125,6 @@ public class RItemStack {
         displayName = s;
     }
     
-    @XmlElement
-    public int getAmount(){
-        return amount;
-    }
-    public void setAmount(int n){
-        amount = n;
-    }
-    
-    @XmlElement
-    public short getDamage(){
-        return damage;
-    }
-    public void setDamage(short s){
-        damage = s;
-    }
-    
-    @XmlElement
-    public byte getData(){
-        return data;
-    }
-    public void setData(byte b){
-        data = b;
-    }
-    
-    @XmlElement
-    public Map<String, Integer> getEnchantMap(){
-        return enchantMap;
-    }
-    public void setEnchantMap(Map<String, Integer> m){
-        enchantMap = m;
-    }
-    
-    @XmlElement
     public List<String> getLore(){
         return lore;
     }
@@ -126,19 +132,11 @@ public class RItemStack {
         lore = sl;
     }
     
-    @XmlElement
-    public int getTicksPerItem(){
-        return ticksPerItem;
+    @XmlElementWrapper(name="enchantments") //This allows it to disappear when empty (so an empty itemStack can collapse)
+    public Map<String, Integer> getEnchantMap(){
+        return (enchantMap.isEmpty())? null: enchantMap;
     }
-    public void setTicksPerItem(int n){
-        ticksPerItem = n;
-    }
-    
-    @XmlElement
-    public int getMaxAmount(){
-        return maxAmount;
-    }
-    public void setmaxAmount(int i){
-        maxAmount = i;
+    public void setEnchantMap(Map<String, Integer> m){
+        enchantMap = m;
     }
 }

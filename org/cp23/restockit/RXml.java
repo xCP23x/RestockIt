@@ -5,6 +5,8 @@
 package org.cp23.restockit;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -63,7 +65,10 @@ public class RXml {
             File file = new File(filePath + fileName);
             marshaller.marshal(this, file);
         } catch(JAXBException e){
-            plugin.debug(e.getStackTrace().toString());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            plugin.debug(sw.toString());
             plugin.debug("Couldn't save file "+ fileName); //ADD PROPER MESSAGE
         }
     }
@@ -87,7 +92,10 @@ public class RXml {
                 cont.xmlToTransient();
             }
         } catch(JAXBException e){
-            plugin.debug(e.getStackTrace().toString());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            plugin.debug(sw.toString());
             plugin.debug("Couldn't load file "+ fileName); //ADD PROPER MESSAGE
         }
     }

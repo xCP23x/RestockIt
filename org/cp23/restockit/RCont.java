@@ -72,7 +72,7 @@ public class RCont {
         }
     }
     
-    public void transientToXml(){
+    public final void transientToXml(){
         //Translates all relevant transient variables to XML-saved variables
         //Called on XML save
         rISList.clear();
