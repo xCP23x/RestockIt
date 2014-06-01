@@ -15,16 +15,14 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 @XmlRootElement(name="container")
-@XmlType(propOrder={"x", "y", "z", "worldUID", "rISList"})
+@XmlType(propOrder={"x", "y", "z", "worldUID", "owner", "users", "rISList"})
 @XmlSeeAlso(RItemStack.class)
 public class RCont {
     //Variables to be saved in XML (MUST have public set methods)
     private int x, y, z;
-    private UUID worldUID;
+    private UUID worldUID, owner;
+    private List<UUID> users;
     private List<RItemStack> rISList = new ArrayList<>();
-    
-    //Transient variables
-    private transient Block block;
     
     //Other transient variables unrelated to XML
     private final transient RXml rx = RestockIt.rxml;
@@ -36,8 +34,7 @@ public class RCont {
     }
     
     public RCont(Block bl){
-        block = bl;
-        transientToXml();
+        saveBlock(bl);
     }
     
     public boolean isInXml(){
@@ -51,16 +48,16 @@ public class RCont {
     
     public void addItemStack(ItemStack is){
         //TEST CODE (See RestockIt.java:39)
+        Block block = getBlock();
         ((InventoryHolder)block.getState()).getInventory().addItem(is);
-        transientToXml();
+        saveBlock(block);
     }
     
     
-    public void xmlToTransient(){
-        //Translates all XML-saved variables to transient variables
-        //Called after XML load
+    public Block getBlock(){
+        //Translates XML-saved variables to a block
         World world = plugin.getServer().getWorld(worldUID);
-        block = world.getBlockAt(x, y, z);
+        Block block = world.getBlockAt(x, y, z);
         
         //Replace all items in inventory
         if(block.getState() instanceof InventoryHolder){
@@ -70,15 +67,16 @@ public class RCont {
                 inv.setItem(i, rISList.get(i).getItemStack());
             }
         }
+        return block;
     }
     
-    public final void transientToXml(){
-        //Translates all relevant transient variables to XML-saved variables
-        //Called on XML save
+    public final void saveBlock(Block block){
+        //Translates block to XML-saved variables
         rISList.clear();
         x=block.getX(); y=block.getY(); z=block.getZ();
         worldUID = block.getWorld().getUID();
         
+        //Save inventory to rISList
         if(block.getState() instanceof InventoryHolder){
             InventoryHolder ivh = (InventoryHolder) block.getState();
             ItemStack[] itemStackArr = ivh.getInventory().getContents();
@@ -122,6 +120,22 @@ public class RCont {
     }
     public void setWorldUID(UUID u){
         worldUID = u;
+    }
+    
+    @XmlElement
+    public UUID getOwner(){
+        return owner;
+    }
+    public void setOwner(UUID u){
+        owner = u;
+    }
+    
+    @XmlElement
+    public List<UUID> getUsers(){
+        return users;
+    }
+    public void setUsers(List<UUID> l){
+        users = l;
     }
     
     @XmlElement(name="itemStack")

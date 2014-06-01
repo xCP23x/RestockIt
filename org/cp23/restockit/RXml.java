@@ -54,16 +54,12 @@ public class RXml {
     
     public void save(String fileName){
         try{
-            for(RCont cont: contList){
-                //Double check that all XML variables are up to date
-                cont.transientToXml();
-            }
-            
             JAXBContext context = JAXBContext.newInstance(this.getClass());
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             File file = new File(filePath + fileName);
             marshaller.marshal(this, file);
+            
         } catch(JAXBException e){
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -86,11 +82,6 @@ public class RXml {
                 throw new RXmlException("XML file version too new: Plugin version " + version + ", file version " +fileVersion);
             }
             
-            for(RCont cont: contList){
-                //Load XML settings to transient variables
-                //This can't be done in constructor, as it's constructed BEFORE XML values are loaded
-                cont.xmlToTransient();
-            }
         } catch(JAXBException e){
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
